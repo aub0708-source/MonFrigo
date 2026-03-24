@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Frigo — Recettes Mela</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root {
+  --cream: #FAF7F2;
+  --warm: #F2EDE4;
+  --brown: #3D2B1F;
+  --brown2: #6B4C3B;
+  --orange: #E8652A;
+  --orange-light: #F5956B;
+  --green: #4A7C59;
+  --green-light: #7AAF8A;
+  --border: #DDD5C8;
+  --text: #2C1F17;
+  --muted: #9A8778;
+  --white: #FFFFFF;
+  --shadow: 0 4px 24px rgba(61,43,31,.10);
+  --shadow-lg: 0 8px 48px rgba(61,43,31,.15);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh}
+
+/* HEADER */
+header{
+  background:var(--brown);
+  padding:1.5rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.logo{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--cream);letter-spacing:-0.5px}
+.logo span{color:var(--orange-light)}
+.header-count{
+  background:var(--orange);color:#fff;
+  font-size:.75rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:5px 14px;border-radius:20px;
+}
+
+/* FRIDGE INPUT SECTION */
+.fridge-section{
+  max-width:900px;margin:0 auto;
+  padding:2.5rem 2rem 1.5rem;
+}
+.section-label{
+  font-family:'Playfair Display',serif;
+  font-size:1.75rem;color:var(--brown);
+  margin-bottom:.3rem;
+  line-height:1.2;
+}
+.section-sub{font-size:.9rem;color:var(--muted);margin-bottom:1.5rem}
+
+/* INGREDIENT INPUT */
+.input-row{display:flex;gap:.6rem;margin-bottom:1rem}
+.ingredient-input{
+  flex:1;
+  border:2px solid var(--border);border-radius:10px;
+  padding:.75rem 1.1rem;
+  font-family:'DM Sans',sans-serif;font-size:.95rem;
+  background:var(--white);color:var(--text);
+  outline:none;transition:border-color .2s;
+}
+.ingredient-input:focus{border-color:var(--orange)}
+.add-btn{
+  background:var(--orange);color:#fff;border:none;
+  border-radius:10px;padding:.75rem 1.4rem;
+  font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;
+  cursor:pointer;transition:background .2s;white-space:nowrap;
+}
+.add-btn:hover{background:var(--brown2)}
+
+/* TAGS */
+.tags-wrap{
+  display:flex;flex-wrap:wrap;gap:.5rem;
+  min-height:44px;margin-bottom:1.2rem;
+}
+.tag{
+  background:var(--warm);border:1.5px solid var(--border);
+  border-radius:20px;padding:5px 12px;
+  display:flex;align-items:center;gap:6px;
+  font-size:.82rem;font-weight:500;color:var(--brown);
+}
+.tag-remove{
+  background:none;border:none;cursor:pointer;
+  color:var(--muted);font-size:1rem;line-height:1;padding:0;
+  transition:color .2s;
+}
+.tag-remove:hover{color:var(--orange)}
+
+/* QUICK TAGS */
+.quick-label{font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem}
+.quick-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.5rem}
+.quick-tag{
+  background:none;border:1.5px solid var(--border);
+  border-radius:20px;padding:4px 11px;
+  font-family:'DM Sans',sans-serif;font-size:.78rem;
+  color:var(--brown2);cursor:pointer;transition:all .2s;
+}
+.quick-tag:hover,.quick-tag.active{background:var(--green);border-color:var(--green);color:#fff}
+
+/* SEARCH MODE */
+.mode-row{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.mode-btn{
+  flex:1;border:1.5px solid var(--border);background:var(--white);
+  border-radius:10px;padding:.6rem;
+  font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;
+  color:var(--muted);cursor:pointer;transition:all .2s;text-align:center;
+}
+.mode-btn.active{background:var(--brown);border-color:var(--brown);color:#fff}
+
+/* SEARCH BTN */
+.search-btn{
+  width:100%;padding:.9rem;
+  background:linear-gradient(135deg,var(--orange) 0%,var(--brown2) 100%);
+  color:#fff;border:none;border-radius:12px;
+  font-family:'Playfair Display',serif;font-size:1.1rem;
+  cursor:pointer;transition:opacity .2s;margin-bottom:2rem;
+}
+.search-btn:hover{opacity:.9}
+
+/* DIVIDER */
+.divider{border:none;border-top:2px solid var(--border);margin:0 2rem 2rem}
+
+/* RESULTS */
+.results-section{max-width:900px;margin:0 auto;padding:0 2rem 3rem}
+.results-title{
+  font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--brown);
+  margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;
+}
+.results-badge{
+  background:var(--orange);color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:700;
+  padding:3px 10px;border-radius:10px;
+}
+
+/* EMPTY STATE */
+.empty{
+  text-align:center;padding:3rem;color:var(--muted);
+}
+.empty-icon{font-size:3rem;margin-bottom:.75rem}
+.empty-text{font-size:.95rem}
+
+/* RECIPE CARDS */
+.recipe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem}
+
+.recipe-card{
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  box-shadow:var(--shadow);
+  cursor:pointer;transition:all .25s;
+  position:relative;
+}
+.recipe-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--orange)}
+
+.card-score{
+  position:absolute;top:.7rem;right:.7rem;
+  background:var(--orange);color:#fff;
+  font-size:.7rem;font-weight:700;
+  padding:3px 8px;border-radius:8px;
+  letter-spacing:.3px;
+}
+.card-score.perfect{background:var(--green)}
+.card-score.partial{background:var(--brown2)}
+
+.card-body{padding:1.1rem}
+.card-title{
+  font-family:'Playfair Display',serif;font-size:1rem;
+  color:var(--brown);line-height:1.3;margin-bottom:.5rem;
+}
+.card-meta{display:flex;gap:.75rem;margin-bottom:.6rem}
+.card-meta-item{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:3px}
+.card-ingredients-preview{
+  font-size:.75rem;color:var(--brown2);
+  background:var(--warm);border-radius:6px;padding:.4rem .6rem;
+  line-height:1.4;
+}
+.card-missing{
+  font-size:.72rem;color:#C0392B;margin-top:.4rem;
+  background:#FFF5F5;border-radius:6px;padding:.3rem .6rem;
+}
+.card-fav{position:absolute;top:.7rem;left:.7rem;font-size:1rem}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(44,31,23,.6);
+  backdrop-filter:blur(4px);z-index:500;
+  display:none;align-items:center;justify-content:center;
+  padding:1rem;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--white);border-radius:18px;
+  max-width:680px;width:100%;max-height:90vh;
+  overflow-y:auto;box-shadow:var(--shadow-lg);
+  position:relative;
+}
+.modal-header{
+  background:var(--brown);padding:1.5rem;
+  position:sticky;top:0;z-index:10;
+  border-radius:18px 18px 0 0;
+}
+.modal-title{
+  font-family:'Playfair Display',serif;font-size:1.4rem;
+  color:var(--cream);line-height:1.2;margin-bottom:.4rem;
+  padding-right:2rem;
+}
+.modal-meta{display:flex;gap:1rem;flex-wrap:wrap}
+.modal-meta-chip{
+  background:rgba(255,255,255,.15);color:var(--cream);
+  font-size:.75rem;padding:3px 10px;border-radius:10px;
+}
+.modal-close{
+  position:absolute;top:1rem;right:1rem;
+  background:rgba(255,255,255,.15);border:none;color:#fff;
+  width:32px;height:32px;border-radius:50%;cursor:pointer;
+  font-size:1.1rem;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
+}
+.modal-close:hover{background:rgba(255,255,255,.3)}
+.modal-body{padding:1.5rem}
+
+/* Modal sections */
+.modal-section{margin-bottom:1.5rem}
+.modal-section-title{
+  font-family:'Playfair Display',serif;font-size:1rem;
+  color:var(--brown);margin-bottom:.75rem;
+  padding-bottom:.4rem;border-bottom:1.5px solid var(--border);
+}
+
+/* Ingredients list */
+.ingredient-list{list-style:none}
+.ingredient-list li{
+  padding:.35rem 0;font-size:.88rem;color:var(--text);
+  border-bottom:1px solid var(--warm);display:flex;align-items:center;gap:.5rem;
+}
+.ingredient-list li:last-child{border:none}
+.ingredient-list li.have::before{content:"✓";color:var(--green);font-weight:700;font-size:.9rem}
+.ingredient-list li.missing::before{content:"○";color:var(--muted);font-size:.9rem}
+.ingredient-list li.section-header{
+  font-weight:700;color:var(--brown2);font-size:.8rem;
+  text-transform:uppercase;letter-spacing:.5px;
+  background:var(--warm);margin:.3rem -0;padding:.3rem .5rem;border-radius:4px;border:none;
+}
+
+/* Instructions */
+.instructions{font-size:.88rem;color:var(--text);line-height:1.7;white-space:pre-line}
+.step{
+  display:flex;gap:.75rem;margin-bottom:.8rem;align-items:flex-start;
+}
+.step-num{
+  background:var(--orange);color:#fff;
+  min-width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:1px;
+}
+
+/* Link */
+.modal-link{
+  display:inline-flex;align-items:center;gap:.4rem;
+  color:var(--orange);font-size:.82rem;font-weight:600;
+  text-decoration:none;
+}
+.modal-link:hover{text-decoration:underline}
+
+/* NUTRITION */
+.nutrition-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;
+}
+.nut-chip{
+  background:var(--warm);border-radius:8px;padding:.5rem .6rem;text-align:center;
+}
+.nut-val{font-weight:700;font-size:.95rem;color:var(--brown)}
+.nut-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+
+@media(max-width:600px){
+  .recipe-grid{grid-template-columns:1fr}
+  .mode-row{flex-wrap:wrap}
+}
+
+/* UPLOAD */
+.upload-btn{
+  background:none;border:1.5px solid rgba(255,255,255,.3);
+  color:rgba(255,255,255,.85);
+  font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;
+  padding:5px 13px;border-radius:8px;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:5px;
+  white-space:nowrap;
+}
+.upload-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.6)}
+.upload-btn svg{flex-shrink:0}
+
+/* UPLOAD TOAST */
+.upload-toast{
+  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(120px);
+  background:var(--brown);color:var(--cream);
+  border-radius:12px;padding:.85rem 1.4rem;
+  font-size:.88rem;font-weight:500;
+  box-shadow:var(--shadow-lg);
+  display:flex;align-items:center;gap:.7rem;
+  z-index:600;
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  max-width:90vw;
+}
+.upload-toast.show{transform:translateX(-50%) translateY(0)}
+.upload-toast.success .toast-icon{color:#6FCF97}
+.upload-toast.error .toast-icon{color:#EB5757}
+.upload-toast.loading .toast-icon{animation:spin .8s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast-icon{font-size:1.1rem}
+.toast-close{
+  background:none;border:none;color:rgba(255,255,255,.5);
+  cursor:pointer;font-size:1rem;padding:0 0 0 .4rem;
+  transition:color .2s;
+}
+.toast-close:hover{color:#fff}
+
+/* UPLOAD MODAL */
+.upload-modal-overlay{
+  position:fixed;inset:0;background:rgba(44,31,23,.65);
+  backdrop-filter:blur(4px);z-index:550;
+  display:none;align-items:center;justify-content:center;padding:1rem;
+}
+.upload-modal-overlay.open{display:flex}
+.upload-modal{
+  background:var(--white);border-radius:18px;
+  width:100%;max-width:480px;
+  padding:2rem;box-shadow:var(--shadow-lg);
+  position:relative;
+}
+.upload-modal-title{
+  font-family:'Playfair Display',serif;font-size:1.3rem;
+  color:var(--brown);margin-bottom:.4rem;
+}
+.upload-modal-sub{font-size:.83rem;color:var(--muted);margin-bottom:1.5rem}
+
+/* DROPZONE */
+.dropzone{
+  border:2.5px dashed var(--border);border-radius:12px;
+  padding:2.5rem 1.5rem;text-align:center;
+  cursor:pointer;transition:all .2s;position:relative;
+  background:var(--warm);
+}
+.dropzone:hover,.dropzone.drag-over{border-color:var(--orange);background:#FEF4EE}
+.dropzone-icon{font-size:2.5rem;margin-bottom:.6rem}
+.dropzone-label{font-size:.9rem;color:var(--brown2);font-weight:500;margin-bottom:.3rem}
+.dropzone-hint{font-size:.75rem;color:var(--muted)}
+.dropzone input[type=file]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;
+}
+
+/* UPLOAD PROGRESS */
+.upload-progress{margin-top:1.2rem;display:none}
+.progress-bar-wrap{
+  background:var(--warm);border-radius:20px;height:8px;overflow:hidden;margin-bottom:.5rem;
+}
+.progress-bar-fill{
+  height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-light));
+  border-radius:20px;width:0%;transition:width .3s ease;
+}
+.progress-label{font-size:.78rem;color:var(--muted);text-align:center}
+
+/* UPLOAD RESULT */
+.upload-result{margin-top:1rem;display:none}
+.upload-result-row{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.5rem .75rem;border-radius:8px;margin-bottom:.4rem;
+  font-size:.83rem;
+}
+.upload-result-row.added{background:#F0FFF4;color:#276749}
+.upload-result-row.updated{background:#EBF8FF;color:#2A69AC}
+.upload-result-row.skipped{background:var(--warm);color:var(--muted)}
+
+.upload-action-row{display:flex;gap:.6rem;margin-top:1.2rem}
+.upload-confirm-btn{
+  flex:1;background:var(--orange);color:#fff;border:none;border-radius:10px;
+  padding:.7rem;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;
+  cursor:pointer;transition:opacity .2s;
+}
+.upload-confirm-btn:hover{opacity:.88}
+.upload-confirm-btn:disabled{opacity:.45;cursor:not-allowed}
+.upload-cancel-btn{
+  background:none;border:1.5px solid var(--border);color:var(--muted);
+  border-radius:10px;padding:.7rem 1.2rem;
+  font-family:'DM Sans',sans-serif;font-size:.9rem;cursor:pointer;transition:all .2s;
+}
+.upload-cancel-btn:hover{border-color:var(--brown2);color:var(--brown)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Mon <span>Frigo</span></div>
+  <div style="display:flex;align-items:center;gap:.75rem">
+    <div class="header-count" id="header-count">91 recettes</div>
+    <button class="upload-btn" onclick="openUploadModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Importer .melarecipes
+    </button>
+  </div>
+</header>
+
+<div class="fridge-section">
+  <div class="section-label">🧊 Qu'est-ce qu'il y a dans le frigo ?</div>
+  <div class="section-sub">Entrez vos ingrédients disponibles pour trouver les recettes adaptées</div>
+
+  <div class="input-row">
+    <input class="ingredient-input" id="ingredient-input" type="text" 
+      placeholder="Ex: poulet, tomates, fromage…" 
+      onkeydown="if(event.key==='Enter')addIngredient()">
+    <button class="add-btn" onclick="addIngredient()">+ Ajouter</button>
+  </div>
+
+  <div class="tags-wrap" id="tags-wrap">
+    <span style="font-size:.8rem;color:var(--muted);align-self:center;padding:.2rem 0">Aucun ingrédient ajouté</span>
+  </div>
+
+  <div class="quick-label">Suggestions rapides</div>
+  <div class="quick-tags" id="quick-tags"></div>
+
+  <div class="mode-row">
+    <button class="mode-btn active" id="mode-any" onclick="setMode('any')">🔍 Au moins un ingrédient</button>
+    <button class="mode-btn" id="mode-half" onclick="setMode('half')">⚡ Moitié des ingrédients</button>
+    <button class="mode-btn" id="mode-all" onclick="setMode('all')">⭐ Tous les ingrédients</button>
+  </div>
+
+  <button class="search-btn" onclick="search()">Trouver mes recettes</button>
+</div>
+
+<hr class="divider">
+
+<div class="results-section">
+  <div id="results-header" class="results-title" style="display:none">
+    Recettes trouvées <span class="results-badge" id="results-badge">0</span>
+  </div>
+  <div id="results-container">
+    <div class="empty">
+      <div class="empty-icon">🍽️</div>
+      <div class="empty-text">Ajoutez des ingrédients puis lancez la recherche !</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-meta" id="modal-meta"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div class="upload-modal-overlay" id="upload-modal-overlay">
+  <div class="upload-modal">
+    <div class="upload-modal-title">📂 Importer des recettes</div>
+    <div class="upload-modal-sub">Ajoutez un fichier <strong>.melarecipes</strong> pour enrichir ou mettre à jour votre base de recettes. Les doublons sont détectés automatiquement.</div>
+
+    <div class="dropzone" id="dropzone"
+      ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+      <input type="file" accept=".melarecipes" onchange="handleFileSelect(event)" id="file-input">
+      <div class="dropzone-icon" id="dropzone-icon">📦</div>
+      <div class="dropzone-label" id="dropzone-label">Glissez votre fichier ici</div>
+      <div class="dropzone-hint">ou cliquez pour parcourir — fichier .melarecipes uniquement</div>
+    </div>
+
+    <div class="upload-progress" id="upload-progress">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
+      <div class="progress-label" id="progress-label">Analyse en cours…</div>
+    </div>
+
+    <div class="upload-result" id="upload-result">
+      <div class="upload-result-row added" id="result-added" style="display:none">
+        <span>✅</span><span id="result-added-text"></span>
+      </div>
+      <div class="upload-result-row updated" id="result-updated" style="display:none">
+        <span>🔄</span><span id="result-updated-text"></span>
+      </div>
+      <div class="upload-result-row skipped" id="result-skipped" style="display:none">
+        <span>⏭️</span><span id="result-skipped-text"></span>
+      </div>
+    </div>
+
+    <div class="upload-action-row">
+      <button class="upload-cancel-btn" onclick="closeUploadModal()">Annuler</button>
+      <button class="upload-confirm-btn" id="upload-confirm-btn" onclick="confirmImport()" disabled>Importer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="upload-toast" id="upload-toast">
+  <span class="toast-icon" id="toast-icon">⏳</span>
+  <span id="toast-text">Importation…</span>
+  <button class="toast-close" onclick="hideToast()">✕</button>
+</div>
+
+<script>
+// ==================== DATA ====================
+const RECIPES = [{"title": "Poulet Miel et Sésame", "ingredients": "500 g aiguillettes de poulet\n1 oeuf\n100 g fécule de maïs\n30 g farine\nHuile de friture\n# Pour la sauce\n6 cuillères à soupe sauce soja (salée)\n4 cuillères à soupe vinaigre de riz\n6 cuillères à soupe miel\n6 cuillères à soupe ketchup\n2 cuillères à soupe huile de sésame\n2 cuillères à café ail semoule\n1 cuillère à soupe fécule de maïs\n# Pour l'accompagnement\n1 brocoli\n200 g riz basmati\ngraines de sésame", "instructions": "Détaillez le brocoli en fleurettes et faites cuire la moitié à la vapeur. Faites cuire le riz selon les indications du paquet.\nMettez le poulet coupé en petits morceaux dans un saladier et ajoutez l'oeuf battus. Mélangez bien pour enrober. Déposez la fécule et la farine dans une assiette creuse et passez la viande dedans. Enrobez bien et tapotez le surplus. Réservez.\nMettez un fond d'huile de friture dans une sauteuse et faites-y frire les morceaux de poulet poulet pendant 5 minutes environ (selon la taille) jusqu'à ce qu'ils soient bien dorés. Egouttez sur papier absorbant.\nDans un bocal, mélangez tous les ingrédients de la sauce sauf la fécule: je mets tout dans le bocal, je ferme et je secoue énergiquement.\nPortez la sauce à frémissement dans une sauteuse. Délayez 1 cuillère à soupe de fécule de maïs dans 2 cuillères à soupe d'eau et ajoutez à la sauce. Mélangez et laissez cuire à feu doux jusqu'à ce que cela épaississe.\nAjoutez le poulet frit et mélangez bien. Saupoudrez de graines de sésame avant de servir.", "prepTime": "30min", "cookTime": "25min", "yield": "4 personnes", "categories": [], "text": "Des morceaux de poulet croustillants nappés d'une sauce très parfumée au miel, sauce soja et sésame", "link": "https://cuisine-addict.com/poulet-miel-et-sesame-recette-infaillible-pour-un-diner-savoureux/", "nutrition": "**Taille des portions** 1 portion\n**Calories** 546 kcal\n**Lipides** 15 g\n**Acides gras saturés** 4 g\n**Acides gras insaturés** 9 g\n**Acides gras trans** 0.1 g\n**Cholestérol** 105 mg\n**Sel** 203 mg\n**Glucides** 76 g\n**Fibres** 3 g\n**Sucres** 3 g\n**Protéines** 24 g", "favorite": false}, {"title": "Boulettes façon Bourguignon", "ingredients": "# Pour les boulettes\n500 g viande hachée\n50 g chapelure\n1 oeuf\n1 cuillère à café herbes de Provence\n1 gousse ail\nsel et poivre\n# Pour la sauce\n200 g lardons fumés\n2 carottes\n2 oignons rouges\n250 g champignons de Paris\n2 gousses ail\n2 feuilles laurier\n37,5 cl vin rouge\n1 L bouillon de bœuf\n70 g concentré de tomates\n1 cuillère à soupe fécule de maïs\nhuile d'olive\nsel et poivre", "instructions": "Epluchez les carottes et coupez-les en petits cubes. Brossez les champignons et coupez-les en quatre\nPelez les oignons et émincez-les finement. Epluchez et dégermez les gousses d'ail puis pressez-les.\n# Les boulettes\nMélangez tous les ingrédients dans un saladier. Assaisonnez bien et formez des boulettes de la taille d'une balle de golf.\nPour la cuisson, vous pouvez soit les griller à la poêle avec un peu d'huile d'olive ou les passer au four à 200°C pendant 15 minutes. Puis réservez sur une assiette.\n# La sauce\nFaites chauffer une cocotte puis mettez-y les lardons à griller pendant 1 minute. Ajoutez l'oignon, les carottes et l'ail. Laissez cuire pendant environ 5 minutes à feu moyen fort en remuant.\nAjouter les champignons et les feuilles de laurier. Salez et poivrez et cuire encore 2 minutes.\nDéglacez avec le vin rouge et portez à ébullition. Laissez réduire 5 minutes puis ajoutez le concentré de tomates et le bouillon. Mélangez bien et laissez mijoter 15 minutes.\nReccupérez un petit bol de liquide et délayez-y la fécule. Remettez dans la cocotte et laissez cuire à frémissement pendant 5 minutes jusqu'à ce que la sauce épaississe. Ajoutez les boulettes dans la sauce et laissez cuire 10 minutes pour qu'elles soient bien chaudes.\nServez avec l'accompagnement de votre choix, moi j'aime avec de la purée de pommes de terre!", "prepTime": "45min", "cookTime": "45min", "yield": "4 personnes", "categories": [], "text": "Des boulettes de boeuf avec une sauce gourmande façon bourguignon", "link": "https://cuisine-addict.com/boulettes-facon-bourguignon-decouvrez-la-recette-reconfort-par-excellence/", "nutrition": "**Taille des portions** 1 portion\n**Calories** 563 kcal\n**Lipides** 29 g\n**Acides gras saturés** 10 g\n**Acides gras insaturés** 16 g\n**Acides gras trans** 1 g\n**Cholestérol** 151 mg\n**Sel** 1670 mg\n**Glucides** 35 g\n**Fibres** 7 g\n**Sucres** 12 g\n**Protéines** 43 g", "favorite": false}, {"title": "Tiramisu fraise pistache", "ingredients": "600 g de mascarpone\n3 œufs\n100 g de sucre (vous pouvez baisser si la pâte de pistache est très sucrée)\n150 à 200 g de pate de pistache légèrement sucrée\n200 g de fraises fraîches\n30 à 40 biscuits cuillères\nPistaches concassées\n# Pour le sirop :\n80 g de sucre, 4,5 cl d’eau, restes de fraises\n#tiramisu#pistache#fraises#tiramisupistache#dessert", "instructions": "Vraiment faut que vous le fassiez, ça va devenir votre dessert préféré !\nlaver et équeuter les fraises, couper en morceaux. Préparer le sirop.\nSéparer les jaunes des blancs. Fouetter les jaunes avec le sucre jusqu’à obtenir un mélange clair et mousseux. Ajouter le mascarpone et la pâte de pistache. Bien mélanger.\nBattre les blancs en neige. Incorporer au mascarpone sans les casser, délicatement.\nTremper les biscuits dans le sirop. Les disposer au fond du plat. Recouvrir de crème, ajouter les fraises coupées en morceaux. Répéter une seconde fois, finir par la crème.\nAjouter des fraises coupées en morceaux, des pistaches concassées. Et laisser prendre minimum 3h au frigo, et c’est prêt 🍓🍰", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DHY4dZMMC6o", "nutrition": "", "favorite": false}, {"title": "Rougail saucisses réunionnais", "ingredients": "1 kg saucisse\n3 c à s huile\n2 unité oignon émincé\n2 gousse ail\ngingembre\n5 unité tomate hachée finement\n1 branche thym\n2 pincée curcuma\n1 unité piment fort ou 1 pincée de piment en poudre de cayenne selon votre goût", "instructions": "Dans une cocotte, faites dorer les oignons avec l'huile et ajoutez les saucisses coupées en morceaux.\nPuis ajoutez l'ail, le gingembre et les tomates. Mélangez bien.\nAjoutez le thym et le curcuma, plus le piment et un petit peu d'eau.\nCouvrez et laissez cuire à feu doux pendant 1/2 heure environ.\nLa sauce devra être très rouge et épaisse, ce qui indiquera la fin de la cuisson.", "prepTime": "15min", "cookTime": "30min", "yield": "6 personnes", "categories": [], "text": "Découvrez la recette du rougail saucisses réunionnais, spécialité créole relevée avec de l'ail et des tomates, qui sent bon la Réunion. Pour adoucir le rougail, ajoutez du sucre.", "link": "https://cuisine.journaldesfemmes.fr/recette/342382-rougail-saucisses", "nutrition": "", "favorite": false}, {"title": "Quiche lorraine traditionnelle", "ingredients": "1 unité pâte brisée\n2 unité oeuf\n200 ml crème fraîche\n200 g lardon\n100 g gruyère râpé\n½ unité oignon\n1 c à s beurre\nsel\npoivre", "instructions": "Préchauffer le four à 200°c. Dans un plat à tarte, mettre la pâte. Râper le fromage.\nCouper en morceaux les lardons et l'oignon et les faire cuire avec le beurre. Laisser refroidir.\nDans un saladier, mélanger les oeufs, la crème fraîche et le fromage. Saler et poivrer.\nVerser d'abord les lardons et l'oignon sur la pâte puis la préparation, tout doucement.\nLaisser cuire au four pendant 40 à 50 minutes (selon le four).", "prepTime": "15min", "cookTime": "45min", "yield": "4 personnes", "categories": [], "text": "Découvrez la véritable recette de la quiche lorraine traditionnelle, facile et délicieuse qui ravira toute la famille. Je l'ai réalisée avec des œufs, de la crème fraîche, des lardons, du gruyère et une jolie pâte brisée. Parfaite pour un pique-nique.", "link": "https://cuisine.journaldesfemmes.fr/recette/311624-quiche-facile", "nutrition": "", "favorite": false}, {"title": "Cannellonis aux épinards, à la ricotta et au fromage fondu", "ingredients": "250 g Cannelloni(s)\n600 g Épinard(s)\n500 g Ricotta\n100 g Parmesan râpé\n200 g Fromage\nHuile d'olive\nSel poivre", "instructions": "Préchauffez votre four à th.6-7(200°C).\nLavez les épinards et faites-les cuire dans l'eau bouillante modérément salée pendant 5 min.\nRetirez-les ensuite de l?eau et faites en sorte de bien les égoutter afin qu?il n?y subsiste pas d?eau de cuisson.\nPassez-les ensuite au mixeur.\nIncorporez la ricotta, la moitié du parmesan râpé, salez puis poivrez.\nPrenez un plat allant au four et placez au fond une couche de fromage fondu.\nPrenez ensuite les cannellonis et remplissez-les l?un après l?autre de crème à la ricotta.\nDisposez-les ensuite l'un à coté de l'autre puis nappez-les d?une couche de fromage fondu.\nParsemez de parmesan râpé et arrosez d'huile d'olive.\nGlissez ensuite au four pour 25 min de cuisson, puis 5 min au grill pour faire gratiner.\nPréchauffez votre four à th.6-7(200°C).\nLavez les épinards et faites-les cuire dans l'eau bouillante modérément salée pendant 5 min.\nRetirez-les ensuite de l?eau et faites en sorte de bien les égoutter afin qu?il n?y subsiste pas d?eau de cuisson.\nPassez-les ensuite au mixeur.\nIncorporez la ricotta, la moitié du parmesan râpé, salez puis poivrez.\nPrenez un plat allant au four et placez au fond une couche de fromage fondu.\nPrenez ensuite les cannellonis et remplissez-les l?un après l?autre de crème à la ricotta.\nDisposez-les ensuite l'un à coté de l'autre puis nappez-les d?une couche de fromage fondu.\nParsemez de parmesan râpé et arrosez d'huile d'olive.\nGlissez ensuite au four pour 25 min de cuisson, puis 5 min au grill pour faire gratiner.", "prepTime": "30min", "cookTime": "30min", "yield": "4", "categories": [], "text": "Cannellonis aux épinards, à la ricotta et au fromage fondu – Ingrédients de la recette : 250 g de cannellonis, 600 g d'épinards , 500 g de ricotta, 100 g de parmesan râpé, 200 g de fromage", "link": "https://www.cuisineaz.com/recettes/cannellonis-aux-epinards-a-la-ricotta-et-au-fromage-fondu-68126.aspx", "nutrition": "", "favorite": false}, {"title": "Buddha bowl aux légumes & sauce satay", "ingredients": "75 g Mélange céréales (cuites)\n1/2 Courgette\n1/4 Concombre\n40 g Pois chiches (cuits)\n80 g Tomate cerise\n1 càc Beurre de cacahuète\n1 càc Sauce soja sucrée\n1 cm Gingembre (frais)\n1/2 gou. Ail", "instructions": "Préchauffez le four à 200°C. Égouttez puis rincez les pois chiches à l'eau claire.\nSur une plaque de cuisson ou dans un plat allant au four, ajoutez les pois chiches égouttés. Assaisonnez-les d'un filet d'huile d'olive, salez et poivrez. Mélangez bien, puis enfournez 15 minutes à 200°C.\nEn parallèle, lavez puis coupez les courgettes en demi-lunes.\nFaites chauffer un filet d’huile d’olive dans une poêle, sur feu moyen. Ajoutez les courgettes. Salez, poivrez puis faites-les revenir 7 à 8 minutes.\nPendant ce temps, lavez puis coupez les tomates cerises en deux.\nLavez puis coupez le concombre en petits dés.\nPréparez le mélange de céréales selon les instructions du paquet.\nPréparez la sauce satay. Dans un bol, mélangez : le beurre de cacahuètes, la sauce soja sucrée, l'ail râpé et le gingembre râpé. Si besoin, ajoutez un filet d'eau pour diluer la sauce.\nUne fois bien dorés et croustillants, sortez les pois chiches du four.\nDans un bol ou une assiette creuse, servez le mélange de céréales avec les tomates cerises, le concombre, les courgettes grillées et les pois chiches croustillants. Ajoutez la sauce satay et re-assaisonnez selon vos goûts. C'est prêt !", "prepTime": "5min", "cookTime": "20min", "yield": "1 serving", "categories": [], "text": "Un bowl parfaitement équilibré !", "link": "https://jow.fr/recipes/buddha-bowl-aux-legumes-et-sauce-satay-8zpi4xg3626o02sl0ql9", "nutrition": "**Calories** 508 kcal\n**Lipides** 13 g\n**Glucides** 82 g\n**Fibres** 13 g\n**Protéines** 17 g", "favorite": false}, {"title": "Gratin de gnocchis aux épinards et tomates séchées", "ingredients": "800 g gnocchis\n1 bocal tomates séchées (ou rôties)\n100 g pousses d’épinards\n50 g olives noires\n20 cl crème liquide (cajou pour moi)\n100 g parmesan (râpé)\n100 g mozzarella (râpée)\n40 cl bouillon de légumes\n1 oignon rouge\n2 gousse ail\nhuile d'olive", "instructions": "Préchauffez votre four à 180°C. Epluchez l'oignon rouge et émincez-le. Pelez et dégermez les gousses d'ail. Equeutez les épinards. Coupez les tomates rôties en lanières.\nFaites chauffer une poêle avec un peu d'huile d'olive et faites-y revenir l'oignon rouge et les gousses d'ail pressées. Ajoutez les gnocchis et les épinards, mélangez bien.\nAjoutez le bouillon, la crème, le parmesan, les tomates et les olives. Mélangez bien et laissez cuire 5 minutes.\nVersez dans un plat à gratin, parsemez de mozzarella râpée et enfournez pour 15 minutes à 180°C.", "prepTime": "15min", "cookTime": "20min", "yield": "4 personnes", "categories": [], "text": "Un petit plat gourmand et ensoleillé à base de gnocchis", "link": "https://cuisine-addict.com/gnocchis-epinards-tomates-sechees/", "nutrition": "**Taille des portions** 1 portion\n**Calories** 572 kcal\n**Lipides** 16 g\n**Acides gras saturés** 9 g\n**Cholestérol** 37 mg\n**Sel** 1526 mg\n**Glucides** 84 g\n**Fibres** 8 g\n**Sucres** 7 g\n**Protéines** 25 g", "favorite": false}, {"title": "Paupiette de poulet aux tomates séchées et au basilic", "ingredients": "4 Blanc(s) de poulet\n1 pot(s) Tomate(s) séchée(s)\n3 branche(s) Basilic\n50 g Parmesan râpé\n1 Jaune(s) d'œuf(s)\nHuile d'olive\nSel poivre", "instructions": "Nettoyez et épongez les branches de basilic. Effeuillez-les. Mixez ensemble le parmesan râpé, le jaune d'oeuf, les feuilles de basilic et 3 c. à soupe d'huile d'olive. Ajoutez 1 à 2 c. à café d'eau si besoin afin d'obtenir une pâte bien lisse et homogène.\nCoupez les blancs de poulet en deux, dans la sens de la longueur, et ouvrez-les afin d'obtenir des escalopes. Placez les escalopes entre 2 feuilles de film alimentaire et tapotez-les avec un rouleau à pâtisserie pour bien les aplatir. Salez-les et poivrez-les les deux côtés. Disposez-les bien à plat et tartinez-les de la pâte au parmesan et basilic. Egouttez les tomates séchées et placez-en 2 à 4 morceaux sur chaque escalope.\nEnroulez ensuite chaque escalope sur elle-même, dans la longueur, afin d'obtenir des paupiettes. Fermez-les avec des cure-dents ou de la ficelle de cuisine. Faites chauffer un fond d'huile d'olive dans une poêle. Faites cuire les paupiettes de poulet environ 15 minutes, en les remuant régulièrement, jusqu'à ce qu'elles soient bien dorées sur toutes les faces. Servez de suite accompagné de riz basmati et de coulis de tomate.", "prepTime": "20min", "cookTime": "15min", "yield": "4", "categories": [], "text": "Paupiette de poulet aux tomates séchées et au basilic – Ingrédients :4 blancs de poulet,1 pot de tomates séchées à l'huile,3 branches de basilic frais,50 g de parmesan râpé,1 ...", "link": "https://www.cuisineaz.com/recettes/paupiette-de-poulet-aux-tomates-sechees-et-au-basilic-86503.aspx", "nutrition": "", "favorite": false}, {"title": "Fajitas de boeuf", "ingredients": "500 g Boeuf haché\n50 g Cheddar râpé\n4 Tortillas souples de blé\n1 Petite boîte de haricots rouges au naturel\n1 Petite boîte de tomates concassées\n1 Oignon\n1 Poivron vert\n2 cuil. à soupe Huile d'olive pimentée\népices tex-mex\nSel", "instructions": "Pelez et ciselez l'oignon finement. Faites chauffer l'huile dans une sauteuse. Versez les oignons et laissez-les blondir 5 min.\nAjoutez la viande hachée, mélangez 3 min à feu vif pour la faire dorer. Incorporez les tomates concassées, le poivron épépiné et émincé et les haricots rouges égouttés. Salez et parsemez d'épices. Laissez mijoter 10 min à couvert.\nDéposez 4 galettes de blé dans le fond d'un plat à gratin. Garnissez le centre de chacune de boeuf mijoté. Refermez les fajitas, parsemez-les de cheddar râpé.\nGlissez le plat sous le grill chaud du four quelques minutes pour faire gratiner le fromage. Servez bien chaud.", "prepTime": "20min", "cookTime": "20min", "yield": "4", "categories": [], "text": "Découvrez notre recette facile et rapide de Fajitas de boeuf sur Cuisine Actuelle ! Retrouvez les étapes de préparation, des astuces et conseils pour un plat réussi.", "link": "https://www.cuisineactuelle.fr/recettes/fajitas-de-boeuf-114416", "nutrition": "", "favorite": false}, {"title": "Salade de quinoa et pois chiches au poulet", "ingredients": "# Pour la marinade\n300 g escalopes de poulet\n1 cuillère à soupe sauce soja\n1 pincée gingembre moulu\nhuile de sésame\n# Pour la garniture\n400 g pois chiche (cuits, poids net égoutté)\n100 g quinoa\n2 carottes\n1 grenade\n1 oignon rouge\n# Pour la vinaigrette\n5 cuillères à soupe huile d'olive\n1 citron jaune\n2 gousse ail\n1 cuillère à café origan séché", "instructions": "Coupez le poulet en dés et déposez dans un plat avec 1 càs d'huile de sésame, 1 càs de sauce soja et 1 pincée de gingembre. Laissez mariner au réfrigérateur.\nFaites cuire le quinoa selon les indications du paquet.\nPelez l'oignon et ciselez-le finement. Epluchez et dégermez les gousses d'ail. Epluchez les carottes et coupez-les en brunoise. Egrainez la grenade.\nEgouttez les pois chiche puis mélangez-les avec le quinoa, les carottes, la grenade et l'oignon dans un saladier.\nFaites griller le poulet dans une poêle avec un filet d'huile de sésame. Ajoutez dans le saladier.\nMélangez tous les ingrédients de la vinaigrette et versez dans le saladier, mélangez bien et servez frais.", "prepTime": "20min", "cookTime": "20min", "yield": "4 personnes", "categories": [], "text": "Une délicieuse salade complète avec du poulet mariné", "link": "https://cuisine-addict.com/salade-de-quinoa-et-pois-chiches-au-poulet/", "nutrition": "**Taille des portions** 1 portion\n**Calories** 405 kcal\n**Lipides** 8 g\n**Acides gras saturés** 1 g\n**Acides gras insaturés** 6 g\n**Acides gras trans** 0.01 g\n**Cholestérol** 48 mg\n**Sel** 133 mg\n**Glucides** 56 g\n**Fibres** 12 g\n**Sucres** 10 g\n**Protéines** 30 g", "favorite": false}, {"title": "Ragù de merguez & Polenta crémeuse au parmesan", "ingredients": "# Pour le ragù\n500 g merguez\n1 branche céleri branche\n1 carotte\n8 cl vin rouge\n70 g concentré de tomates\n400 g tomates concassées\n2 cubes bouillon de volaille\n1 oignon jaune\n2 gousse ail\n2 feuilles laurier\n1 brin romarin (frais)\nhuile d'olive\nsel et poivre\n# Pour la polenta\n125 g polenta\n60 cl lait\n10 cl crème liquide\n50 g parmesan (râpé)", "instructions": "Epluchez les oignons et ciselez-les finement. Epluchez et dégermez les gousses d'ail.\nEpluchez la carotte et le céleri puis coupez-les en brunoise (tout petits dés).\nFaites chauffer une sauteuse avec un peu d'huile d'olive et faites-y revenir les carottes, céleri, oignon et ail pressé. Salez et poivrez, laissez cuire 3 minutes en remuant.\nRetirez le boyaux des merguez et ajoutez la chaire dans la sauteuse. Laissez griller 5 minutes puis ajoutez le vin rouge et grattez bien les sucs. Ajoutez le concentré de tomates, les tomates concassées, les cubes de bouillon émiettés et les herbes. Mélangez bien. Laissez cuire à frémissement pendant 30 minutes en remuant de temps en temps.\nPendant ce temps, préparez la polenta: faites bouillir le lait, salez et poivrez puis versez la polenta en pluie. Laissez cuire en remuant durant quelques minutes, le temps que la polenta se décolle de la casserole. Retirez du feu et ajoutez le parmesan et la crème, rectifiez l'assaisonnement.", "prepTime": "20min", "cookTime": "30min", "yield": "4 personnes", "categories": [], "text": "Une façon originale d'accommoder les merguez après la période des barbecue!", "link": "https://cuisine-addict.com/ragu-merguez-polenta-cremeuse-parmesan/", "nutrition": "**Taille des portions** 1 portion\n**Calories** 628 kcal\n**Lipides** 38 g\n**Acides gras saturés** 14 g\n**Acides gras insaturés** 21 g\n**Cholestérol** 99 mg\n**Sel** 1448 mg\n**Glucides** 46 g\n**Fibres** 4 g\n**Sucres** 10 g\n**Protéines** 26 g", "favorite": false}, {"title": "One pan de légumes du soleil & chorizo", "ingredients": "300 g courgette\n300 g aubergine\n1 poivron (rouge)\n1 poivron (jaune)\n1 chorizo\n2 oignon jaune\n4 gousse ail\n1 feuille laurier\nromarin et thym frais\npaprika fumé\nhuile d'olive\nsel et poivre", "instructions": "Préchauffez votre four à 180 °C\nEpluchez les oignons et ciselez-les finement. Epluchez et dégermez les gousses d'ail.\nCoupez les courgettes et les aubergines en gros cubes. Epépinez les poivrons et coupez-les en lanières. Déposez tous les légumes dans un grand plat à four.\nAjoutez les oignons et les gousses d'ail juste coupées en deux dans le plat. Assaisonnez en sel, poivre et paprika fumé. Ajoutez du thym, du romarin et une feuille de laurier.\nArrosez généreusement d'huile d'olive et mélangez bien. Enfournez pour 30 minutes puis ajoutez le chorizo coupé en rondelles et poursuivez la cuisson 15 minutes.", "prepTime": "15min", "cookTime": "45min", "yield": "4 personnes", "categories": [], "text": "Un plat rapide et facile pour profiter des légumes d'été", "link": "https://cuisine-addict.com/one-pan-legumes-chorizo/", "nutrition": "**Taille des portions** 1 portion\n**Calories** 142 kcal\n**Lipides** 6 g\n**Acides gras saturés** 2 g\n**Acides gras insaturés** 2 g\n**Cholestérol** 16 mg\n**Sel** 311 mg\n**Glucides** 16 g\n**Fibres** 5 g\n**Sucres** 9 g\n**Protéines** 7 g", "favorite": false}, {"title": "Macaronis au parmesan, saucisson à l'ail et potimarron", "ingredients": "400 g pâtes sèches (macaronis)\n1 potimarron\n1 saucisson à l'ail\n2 poignées pousses d’épinards\n50 g parmesan\n1 échalote\n3 gousses ail\nhuile d'olive\nsel et poivre", "instructions": "Pelez l'échalote et ciselez-en finement. Pelez et dégermez les gousses d'ail. Coupez le potimarron en deux, ôtez les graines, pelez-le (vous pouvez conserver la peau s'il est bio) et coupez-le en petits cubes.\nPortez un grand volume d'eau à ébulition et faites-y cuire les dés de potirmarron jusqu'à ce qu'ils soient tendres (environ 10 minutes). Retirez à l'aide d'une écumoire et mixez-les.\nPortez l'eau du potimarron à nouveau à ébullition en en rajoutant au besoin et faites-y cuire les macaronis selon les indications du paquet moins 1 minute (6 minutes pour moi). Récupérez une louche d'eau de cuisson et égouttez les pâtes.\nFaites revenir l'échalote et les gousses d'ail pressées dans une poêle avec un peu d'huile d'olive. Coupez le saucisson à l'ail en rondelles et ajoutez-le, laissez cuire à feu moyen en remuant jusqu'à ce qu'il commence à dorer.\nAjoutez la purée de potimarron, l'eau de cuisson réservée et assaisonnez. Ajoutez les pousses d'épinards et râpez un peu de parmesan dans la sauce. Mélangez bien puis ajoutez les pâtes.\nServez bien chaud avec des copeaux de parmesan.", "prepTime": "", "cookTime": "", "yield": "4 personnes", "categories": [], "text": "Des pates dans une sauce fondante au parmesan et potimarron accompagné de saucisson à l'ail", "link": "https://cuisine-addict.com/macaronis-au-parmesan-saucisson-a-lail-et-potimarron/", "nutrition": "", "favorite": false}, {"title": "One pan de poulet au miel et à la moutarde", "ingredients": "4 escalope de poulet\n300 g courge butternut (pelée et coupée en dés)\n2 carotte\n1 petit brocoli\n1 oignon rouge\n3 cuillère à soupe miel\n1 cuillère à soupe moutarde à l’ancienne\n1 cuillère à soupe sauce soja\nhuile d'olive\nsel et poivre", "instructions": "Préchauffez votre four à 180°C. Epluchez les carottes et coupez-les en rondelles. Détachez les fleurettes du brocoli. Pelez l'oignon et coupez-le en lamelles. Entaillez les escalopes de poulet dans la largeur sans aller jusqu'au bout.\nRecouvrez une ou plusieurs plaque(s) de papier cuisson et déposez-y les fleurettes de brocoli, les rondelles de carottes, les dés de courge et l'oignon, salez et poivrez, puis arrosez généreusement d'huile d'olive.\nAjoutez le poulet sur les légumes. Mélangez la moutarde à l'ancienne, la sauce soja et le miel puis nappez-en les escalopes de poulet.\nEnfournez pour 30/35 minutes en surveillant la cuisson.", "prepTime": "15min", "cookTime": "30min", "yield": "4 personnes", "categories": [], "text": "Un plat de légumes et filets de volaille qui cuit ensemble au four", "link": "https://cuisine-addict.com/one-pan-de-poulet-au-miel-et-a-la-moutarde/", "nutrition": "**Taille des portions** 1 portion\n**Calories** 318 kcal\n**Lipides** 6 g\n**Acides gras saturés** 1 g\n**Cholestérol** 145 mg\n**Sel** 304 mg\n**Glucides** 15 g\n**Fibres** 3 g\n**Sucres** 5 g\n**Protéines** 49 g", "favorite": false}, {"title": "Poulet grillé, sauce salsa avocat et mangue", "ingredients": "4 filets de poulet\n100 g sauce barbecue\n1 avocat\n1 mangue\n1 orange\n1 citron vert\n1 oignon rouge\n1 petit piment (facultatif)", "instructions": "Mettez les escalopes de poulet dans un plat et couvrez de sauce barbecue. Fermez à l'aide d'un film plastique et laissez mariner 30 minutes au frais.\nPendant ce temps, préparez la salsa: coupez l'avocat, le piment et la mangue en cubes. Emincez l'oignon rouge en demie rondelles. Prélevez les suprêmes d'orange et coupez-les en cubes. Arrosez du jus de citron vert et mélangez bien. Réservez au frais.\nFaites griller le poulet dans une poêle bien chaude avec un peu d'huile d'olive. Servez accompagné de riz et de la salsa.", "prepTime": "15min", "cookTime": "10min", "yield": "4 personnes", "categories": [], "text": "Des escalopes de poulet marinées accompagnées d'une salsa à l'avocat, mangue et orange.", "link": "https://cuisine-addict.com/poulet-grille-sauce-salsa-avocat-mangue/", "nutrition": "", "favorite": false}, {"title": "Papillotes de poulet au curcuma et quinoa aux fruits", "ingredients": "4 escalopes poulet\n600 g quinoa (mélange 3 quinoas pour moi)\n½ grenade\n2 kiwi (jaune)\n1 kiwi (vert)\n1 cuillère à soupe raisins secs\n1 cuillère à café curcuma (moulu)\n1 citron jaune (non traité)\n1 sachet thé vert\nhuile d’olive\nsel et poivre", "instructions": "Préchauffez votre four à 180°C. Faites cuire le quinoa dans de l'eau bouillante salée selon les instructions du paquet.\nPréparez 4 carrés de papier cuisson et placez-y les escalopes de poulet. Badigeonnez-les d’huile d’olive et saupoudrez de curcuma, sel et poivre. Massez la viande pour bien répartir les épices.\nCoupez le citron en fines tranches et déposez-en deux sur chaque escalope de poulet. Repliez la feuille de papier cuisson pour former une papillote et enfournez pour 20 minutes.\nPendant ce temps, pelez les kiwis et coupez-les en petits dés, récupérez les graines de grenade, effeuillez et ciselé le persil. Mettez les raisins à gonfler dans le thé vert bien chaud.\nMélangez le quinoa égoutté avec 2 cuillères à soupe d'huile d'olive puis ajoutez les fruits et les raisins égouttés. Dégustez avec la papillote bien chaude.", "prepTime": "20min", "cookTime": "20min", "yield": "4 personnes", "categories": [], "text": "Des papillotes de poulet colorées et un quinoa très gourmand à la grenade et au kiwi!", "link": "https://cuisine-addict.com/papillotes-poulet-curcuma-quinoa-aux-fruits/", "nutrition": "", "favorite": false}, {"title": "Salade estivale au Melon, Jambon & Figues fraîches", "ingredients": "1 melon (bien mûr)\n4 figue\n16 tranches jambon fumé (Forêt-Noire pour moi)\n100 g feta\n1 poignée roquette\n1 petit bouquet basilic\ncrème de balsamique", "instructions": "Coupez le melon en deux, retirez les pépins puis taillez chaque moitié en 6 morceaux.\nCoupez les figues en quatre et la feta en petits dés. Effeuillez le basilic.\nDressez 3 tranches de melon par assiette, ajoutez 4 tranches de jambon fumé, 1 figue, quelques dés de feta et de la roquette. Parsemez de basilic et de quelques gouttes de crème de balsamique. Servez bien frais!", "prepTime": "10min", "cookTime": "", "yield": "4 personnes", "categories": [], "text": "Une salade estivale fraîche et légère à base de melon et de figues", "link": "https://cuisine-addict.com/salade-estivale-melon-jambon-figues-fraiches/", "nutrition": "", "favorite": false}, {"title": "Poulet teriyaki", "ingredients": "500 g de hauts de cuisse de poulet\n1 càs de sauce soja foncée\n4 càs de sauce soja sucrée\n1 càs d’huile de sésame\n8 g de gingembre frais\n2 gousses d’ail\n1 piment antillais\nCoriandre\nSel, poivre", "instructions": "Ajoutez une tasse à café d’eau à la marinade au moment de la verser dans la poêle.\nLaissez cuire avec la sauce pendant 3 à 4 minutes à feu vif. 🔥", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DBMXCg_ox9r", "nutrition": "", "favorite": false}, {"title": "Poulet curry coco", "ingredients": "2 blancs de poulet\n1 càs de curry en poudre\n1 càs de paprika en poudre\n1 càc d’origan\n5 càs d’huile d’olive\n30 g de beurre\n1 càc d’ail en poudre\n20 cl de lait de coco\n300 g de riz blanc cuit\nSel, poivre", "instructions": "", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DIwjuEiAq-t", "nutrition": "", "favorite": false}, {"title": "Tarte courgettes et burrata", "ingredients": "pâte brisée ou feuilletée\nCourgette en lamelle\nOignon en tranche\nFeuilles de basilic\nBurrata\nPistache\nUne grosse poignée de basilic\nUne poignée de noix de cajou\n1 à 2 gousses d’ail\nUne cuillère à soupe de parmesan\nDeux cuillères à soupe de crème fraîche\nUne cuillère à café d’huile d’olive", "instructions": "Commence par réaliser des lamelles de courgettes à la mandoline.\nPrépare ensuite ta crème de basilic en mixant tous les ingrédients.\nÉtale ta crème sur ta pâte, puis ajoute les courgettes et les oignons. Poivre et arrose d’un filet d’huile d’olive.\nMets au four à 180 degrés pendant 25 à 30 minutes (jusqu’à ce qu’elle soit bien dorée).\nÀ la sortie du four, laisse tiédir une dizaine de minutes, puis ajoute la burrata, les pistaches concassées et quelques feuilles de basilic.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DKebSv_ojkn", "nutrition": "", "favorite": false}, {"title": "Pinsa nectarines et burrata", "ingredients": "# Pour une pinsa :\nune pinsa prête à l'emploi\n2 nectarines\n1 burrata\n1 boule de mozzarella\nau moins 4 tranches d'un jambon cru de qualité\nhuile d'olive\nmiel\nsel, poivre, piment d'Espelette et thym", "instructions": "Disposer la mozzarella sur la pinsa, ajouter un filet d'huile d'olive et enfourner pendant 5min à 200°,\nPendant ce temps, faire revenir les nectarines coupées en quartiers, dans de l'huile d'olive, assaisonner de sel, poivre, thym et ajouter le miel en fin de cuisson, mélanger délicatement,\nSortir la pinsa du four et dresser avec le jambon, la burrata (le cœur = stracciatella), les nectarines, le piment d'Espelette, encore un peu de thym, le jus de cuisson des nectarines et un filet d'huile d'olive,\nDéguster immédiatement 😍", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DLXoNQ7I-dA", "nutrition": "", "favorite": false}, {"title": "Aubergines à la Parmesane", "ingredients": "600 g aubergine (soit environ 3 aubergines de taille moyenne)\n200 g tomate (soit environ 3 tomates)\n3 gousses ail\n1 oignon jaune\n3 càs chapelure\n4 càs parmesan\n200 g tomates concassées (en boite)\n1 cuillère à café persil (ciselé)\n1 cuillère à café thym (ciselé)\n120 g mozzarella ((1 boule))\n1 càs basilic (ciselé)\nhuile d'olive\nsel et poivre", "instructions": "Préchauffez votre four position en position grill à 230/250°C. Ôtez le pédoncule des aubergines puis tranchez les dans le sens de la longueur en tranches régulières. Si vous avez une mandoline, ouvrez sur une épaisseur de 1 cm. Recouvrez une plaque de cuisson de papier sulfurisé ou d’un tapis silicone et déposez-y les tranches d »aubergine. Badigeonnez avec 2 c. à café d’huile d’olive et enfournez 10 minutes.\nBaissez la température du four à 180°C chaleur tournante. Ôtez le pédoncule des tomates puis coupez-les également en tranches fines et régulières (toujours 1 cm à la mandoline si vous en possédez une). Émincez l’oignon et pressez les gousses d’ail. Mélangez le parmesan râpé et la chapelure.\nBadigeonnez un plat à gratin d’huile d’olive puis versez-y la moitié des tomates concassées. Saupoudrez de thym et persil ciselé. Recouvrez de tranches d’aubergines grillées, salez et poivrez, puis recouvrez de tranches de tomates. Parsemez d’ail et d’oignon puis répartissez la moitié du mélange parmesan râpé et chapelure.\nRenouvelez les couches jusqu’à épuisement des ingrédients. Terminez en parmesan le reste du mélange chapelure/parmesan râpé, recouvrez de mozzarella coupée en tranches et de basilic ciselé. Nappez d’une cuillère à café d’huile d’olive et enfournez pendant 25 minutes. Une fois cuit, vous pouvez garder votre plat au chaud en le couvrant de papier aluminium jusqu’au moment de servir.", "prepTime": "30min", "cookTime": "25min", "yield": "4 personnes", "categories": [], "text": "Un délicieux plat aux aubergines fondantes à servir en accompagnement ou en plat principal végétarien.", "link": "https://cuisine-addict.com/aubergine-parmesane/", "nutrition": "", "favorite": false}, {"title": "Pâtes au mascarpone, tomates et lardons", "ingredients": "400 g pâtes sèches\n200 g lardons fumés\n100 g tomates concassées\n250 g mascarpone\n100 g pousses d’épinards\n1 gousse ail\n1 bouillon cube\npaprika fumé", "instructions": "Epluchez et dégermez la gousses d'ail.\nFaites griller les lardons dans une sauteuse sans ajouter de matière grasse. Ajoutez l'ail pressé et le bouillon émietté, mélangez bien et laisser cuire encore 1 minute. Déglacez avec 10 cl d'eau et grattez bien le fond de la sauteuse.\nAjoutez les tomates concassées, 1 pincée de paprika fumé et laissez mijoter 10 minutes. Pendant ce temps, faites cuire les pâtes selon les indications du paquet.\nAjoutez le mascarpone et les pousses d'épinards dans la sauce, poivrez à votre goût, mélangez délicatement et laissez mijoter encore 5 minutes à petit feu. Ajoutez les pâtes dans la sauce, mélangez et servez immédiatement.", "prepTime": "10min", "cookTime": "15min", "yield": "4 personnes", "categories": [], "text": "Un plat de pâtes gourmand et complet", "link": "https://cuisine-addict.com/pates-mascarpone-tomates-lardons/", "nutrition": "**Taille des portions** 1 portion\n**Calories** 878 kcal\n**Lipides** 50 g\n**Acides gras saturés** 24 g\n**Acides gras insaturés** 13 g\n**Acides gras trans** 0.1 g\n**Cholestérol** 96 mg\n**Sel** 638 mg\n**Glucides** 80 g\n**Fibres** 4 g\n**Sucres** 4 g\n**Protéines** 25 g", "favorite": false}, {"title": "One pan de poulet pané au citron, parmesan et ail", "ingredients": "# Pour le poulet\n4 escalope de poulet\n1 oeuf\n50 g chapelure\n50 g parmesan\n# Pour l'accompagnement\n150 g tomates cerise\n1 petite courgette\n1/2 poivron rouge\n2 oignon nouveau\n2 citron jaune\n2 gousses ail\nhuile d'olive\nsel et poivre", "instructions": "Dans un bol mélangez l'oeuf, le jus d'un citron et 1 gousse d'ail pressée. Salez, poivrez puis déposez le poulet et recouvrez le bien. Laissez mariner au frais 30 minutes.\nCoupez les tomates cerise en deux, le poivron en lanières, la courgette et les oignons nouveaux en rondelles et le citron restant en quartiers. Déposez le tout sur une plaque allant au four. Salez, poivrez et arrosez d'un filet d'huile d'olive.\nPréchauffez votre four à 200°C. Mélangez la chapelure et le parmesan dans un bol. Panez-y les escalopes de poulet bien enrobées de la préparation au citron. Déposez le poulet sur la plaque avec les légumes et enfournez pour 15 minutes puis retournez et laissez cuire encore 10 minutes.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "Des escalopes panées pleines de saveurs cuites au four avec les légumes d'accompagnement", "link": "https://cuisine-addict.com/one-pan-poulet-parmesan-citron/", "nutrition": "", "favorite": false}, {"title": "Bowl poulet teriyaki & riz", "ingredients": "120 g Tomates cerises\n1 Poulet (escalope)\n1/2 càs Sauce Teriyaki\n50 g Riz\n20 g Graines de sésame\n1 poignée Salade (roquette)", "instructions": "Faites cuire le riz selon les indications du paquet soit environ 8 à 10 min.\nPendant ce temps, coupez les tomates cerises en deux. Réservez.\nCoupez le poulet en morceaux.\nOptionnel : pour des morceaux de poulet plus croustillants, roulez-les dans la farine.\nÉgouttez le riz.\nFaites chauffer un filet d'huile d'olive dans une poêle bien chaude puis ajoutez les cubes de poulet.\nFaites cuire 2-3 minutes sur feu moyen, en retournant les cubes de poulet, ils doivent être dorés sur chaque face. Poivrez.\nAjoutez la sauce soja sucrée. Continuez de cuire pendant 2 min sur feu doux en arrosant les cubes de poulet de sauce.\nAjoutez le sésame et mélangez. Les morceaux de poulet doivent être caramélisés. Une fois le poulet cuit, réservez.\nGardez la même poêle, versez un filet d'huile et ajoutez les tomates cerises. Faites-les revenir quelques minutes sur feu moyen.\nDressez dans une assiette. Ajoutez le riz, le poulet, les tomates cerises et la roquette. Poivrez et versez un filet d'huile d'olive.\nVersez un filet de sauce soja sucrée si vous le souhaitez et parsemez de quelques graines de sésame si vous en avez, poivrez. C'est prêt !", "prepTime": "4min", "cookTime": "20min", "yield": "1 serving", "categories": [], "text": "Sucré, salé, simple, bon : tout ce qu'on aime !", "link": "https://jow.fr/recipes/bowl-poulet-teriyaki-et-riz-8gs13wox4d4wkobk12ps", "nutrition": "**Calories** 576 kcal\n**Lipides** 22 g\n**Glucides** 53 g\n**Fibres** 4 g\n**Protéines** 46 g", "favorite": false}, {"title": "Risotto aux poireaux et jambon Serrano", "ingredients": "300 g Riz à risotto\n90 cl Bouillon de volaille\n10 cl Vin blanc sec\n1 Petit oignon\n80 g Parmesan\n40 g Beurre\n4 tranches Jambon Serrano\n4 Blancs de poireaux\nSel\nPoivre", "instructions": "Ôtez la première peau de votre oignon et ciselez-le.\nRincez votre riz à rissoto jusqu’à ce que l’eau rendue soit claire.\nDans une casserole ou une sauteuse, faites fondre 20 g de beurre sur feu moyen/fort. Ajoutez l’oignon et le riz. Enrobez l’ensemble de matière grasse et chauffez 2 minutes en remuant constamment. Montez le feu, versez le vin blanc et poursuivez la cuisson jusqu’à totale évaporation du liquide.\nBaissez le feu, incorporez le bouillon petit à petit en mélangeant constamment.\nRâpez le parmesan.\nLorsque votre riz à rissoto est cuit, ajoutez hors du feu 20 g de beurre et la moitié du parmesan râpé. Mélangez, couvrez et laissez reposer 5 minutes. Salez et poivre selon votre goût.\nLavez vos blancs de poireaux puis ficelez-les ensemble.\nPlongez vos blancs de poireaux dans une casserole remplie d’eau bouillante salée et faites-les cuire pendant 25 minutes.\nVérifiez la cuisson puis égouttez vos poireaux. Émincez vos blancs de poireaux.\nRépartissez votre risotto dans des assiettes creuses. Agrémentez-le de blancs de poireaux et de tranches de jambon Serrano. Saupoudrez l’ensemble de parmesan.", "prepTime": "15min", "cookTime": "30min", "yield": "4", "categories": [], "text": "Découvrez notre recette facile et rapide de Risotto aux poireaux et jambon Serrano sur Cuisine Actuelle ! Retrouvez les étapes de préparation, des astuces et conseils pour un plat réussi.", "link": "https://www.cuisineactuelle.fr/recettes/risotto-aux-poireaux-et-jambon-serrano-193607", "nutrition": "", "favorite": false}, {"title": "Boeuf bourguignon (le meilleur)", "ingredients": "40 g (3 c. à soupe) de beurre, ramolli\n30 g (3 c. à soupe) de farine tout usage non blanchie\n140 g (5 oz) de de lard salé entrelardé et sans la couenne, coupé en dés\n1,1 kg (2 1/2 lb) de paleron (ou de palette de bœuf désossée), coupé en cubes\n30 ml (2 c. à soupe) d’huile d’olive\n1 gros oignon, haché\n1 carotte, coupée en dés\n2 gousses d’ail, hachées\n45 ml (3 c. à soupe) de brandy\n500 ml (2 tasses) de vin rouge\n500 ml (2 tasses) de bouillon de bœuf réduit en sel\n1 branche de thym frais\n1 feuille de laurier\n225 g (1/2 lb) de champignons blancs, coupés en deux\n170 g (6 oz) de petits oignons blancs perlés, blanchis et pelés\n40 g (3 c. à soupe) de beurre\n30 ml (2 c. à soupe) de persil frais ciselé", "instructions": "# Boeuf\nPlacer la grille au centre du four. Préchauffer le four à 165 °C (325 °F).\nDans un petit bol, mélanger le beurre et la farine. Réserver le beurre manié.\nDans une petite casserole d’eau bouillante, blanchir le lard salé 5 minutes afin de le dessaler. Égoutter. Réserver sur du papier absorbant.\nDans une cocotte en fonte ou une grande casserole allant au four à feu moyen-élevé, dorer\nla moitié des cubes de viande à la fois dans l’huile. Saler et poivrer. Réserver sur une assiette. Retirer l’excès de gras en en conservant 15 ml (1 c. à soupe) dans la cocotte.\nDans la même cocotte, dorer l’oignon, la carotte et le lard dans le gras chaud. Ajouter l’ail et cuire 1 minute en remuant. Ajouter le brandy et laisser réduire presque à sec. Ajouter le vin et laisser réduire de moitié. Ajouter le bouillon puis le beurre manié en remuant constamment au fouet. Porter à ébullition. Remettre la viande dans la cocotte. Ajouter le thym et la feuille de laurier. Couvrir et cuire au four 1 heure.\n# Garniture\nEntre-temps, dans une grande poêle à feu élevé, cuire les champignons et les oignons perlés dans\nle beurre jusqu’à ce qu’ils soient bien dorés. Saler et poivrer. Ajouter les légumes à la viande. Couvrir et poursuivre la cuisson 30 minutes ou jusqu’à ce que la viande soit tendre. Rectifier l’assaisonnement.\nServir le bœuf bourguignon avec des pappardelles, des pommes de terre ou, plus classique, avec des tranches de pain ménage, grillées et beurrées. Garnir du persil.", "prepTime": "30min", "cookTime": "2h", "yield": "6 portion(s)", "categories": [], "text": "En matière de réconfort, peu de choses surpassent l’odeur d’un bœuf bourguignon qui mijote. Alors, imaginez quand il s’agit de celui-ci, notre interprétation la mieux réussie de ce grand classique français.", "link": "https://www.ricardocuisine.com/recettes/7859-boeuf-bourguignon-le-meilleur", "nutrition": "", "favorite": false}, {"title": "Saucisses au chou vert", "ingredients": "1 Chou vert\n4 Saucisse(s)\n2 Oignon(s)\n1 Échalote(s)\n2 c. à soupe Huile d'olive\n2 Branches Thym\n1 feuille Laurier\nSel poivre", "instructions": "Lavez le chou et coupez-le en morceaux. Plongez-les dans une casserole d'eau bouillante salée. Faites cuire pendant 45 min. Égouttez le chou.\nVersez l'huile d'olive dans une cocotte. Épluchez les oignons et l'échalote. Émincez le tout et ajoutez-les dans la cocotte. Faites revenir pendant 5 min. Ajoutez les saucisses, la feuille de laurier et les branches de thym. Faites cuire une dizaine de minutes.\nAjoutez le chou. Salez et poivrez à votre convenance. Faites mijoter l'ensemble pendant 10 min environ. Vérifiez que les saucisses sont bien cuites. Ôtez la cocotte du feu et dégustez le plat bien chaud.", "prepTime": "15min", "cookTime": "1h 5min", "yield": "4", "categories": [], "text": "La période hivernale est arrivée, alors place aux plats généreux et gourmands. Pour vous régaler à coup sûr, nous vous proposons une savoureuse recette de saucisses au chou vert. Le chou, légume de saison, s'associe à merveille avec la saucisse. Facile et rapide à préparer, ce plat mijoté conviendra à toute la famille.", "link": "https://www.cuisineaz.com/recettes/saucisses-au-chou-vert-103086.aspx", "nutrition": "", "favorite": false}, {"title": "Mac & Cheese à la Tomme de Savoie", "ingredients": "250 g macaronis\n175 g tomme de Savoie (râpée grossièrement)\n25 g beurre\n20 cl lait concentré non sucré\n1 cuillère à soupe moutarde\n1 cuillère à soupe farine\n150 g jambon cru (coupé en allumettes)\n15 cl lait\n100 g chapelure\nsel et poivre", "instructions": "Préchauffez votre four à 180°C. Faites cuire les macaronis selon les indications du paquet puis rincez-les sous l'eau froide. Faites revenir le jambon quelques instants à la poêle et réservez.\nFaites fondre le beurre dans une casserole puis ajoutez la farine et mélangez au fouet. Laissez colorer légèrement.\nAjoutez le lait concentré, la moutarde, salez et poivrez. Laissez cuire 3 à 4 minutes, jusqu'à ce que le mélange épaississe. Ajoutez le lait et les 3/4 du fromage et laissez fondre en remuant.\nAjoutez les macaronis égouttés et le jambon dans la sauce et mélangez bien avant de verser le tout dans un plat à gratin.\nParsemez de chapelure et du fromage restant puis enfournez pour environ 20 minutes (jusqu'à ce que le gratin soit bien doré)", "prepTime": "25min", "cookTime": "20min", "yield": "4 personnes", "categories": [], "text": "Des macaronis au fromage version gratin à la Tomme de Savoie.", "link": "https://cuisine-addict.com/mac-cheese-a-la-tomme-de-savoie/", "nutrition": "", "favorite": false}, {"title": "Curry de poulet au potimarron", "ingredients": "600 g Blanc(s) de poulet\n1 Potimarron\n3 Carotte(s)\n1 Poireau(x)\n2 Oignon(s)\n0.5 l Bouillon de volaille\n1 pot(s) Crème fraîche\n1 c. à soupe Farine\n2 c. à soupe Curry\nHuile\nSel, poivre", "instructions": "Coupez les blancs de poulet en dés. Faites-les dorer dans l'huile chaude. Salez et poivrez. Retirez la viande de la poêle.\nLavez les légumes. Coupez les carottes et le poireau en rondelles. Emincez l'oignon. Coupez le potimarron en petits cubes. Etuvez les légumes 10 min, dans les sucs de cuisson réchauffés.\nSaupoudrez de farine et de curry. Versez le bouillon. Couvrez et laissez mijoter 20 min.\nRajoutez les blancs de poulet et la crème. Servez.", "prepTime": "25min", "cookTime": "30min", "yield": "4", "categories": [], "text": "Vous pouvez servir cette recette, accompagnée de riz.", "link": "https://www.cuisineaz.com/recettes/curry-de-poulet-au-potimarron-54016.aspx", "nutrition": "", "favorite": false}, {"title": "Gratin dauphinois simplissime", "ingredients": "2 kg Pomme de terre à chair ferme\n100 g Beurre\n3 dl Crème liquide\n1 l Lait entier\n5 gousse(s) Ail\n1 pincée(s) Noix de muscade\n4 pincée(s) Sel\n2 pincée(s) Poivre", "instructions": "# 1 : Préparation des pommes de terre et de l'ail\nÉpluchez les pommes de terre, lavez-les et coupez-les en rondelles assez fines à l’aide d’une mandoline. Pelez et écrasez les gousses d’ail.\n# 2 : Cuisson des pommes de terre dans le lait\nDans une grande casserole, faites bouillir le lait entier, le sel, le poivre, la muscade et l’ail. Jetez les rondelles de pommes de terre dans le lait bouillant et assaisonné. Laissez cuire une dizaine de minutes pour qu’elles soient bien imbibées et souples.\n# 3 : Montage du gratin dauphinois\nPréchauffez le four th.6 (180°C). Répartissez les rondelles de pommes de terre dans un plat à gratin préalablement beurré. Versez par-dessus la crème fraîche et le lait. Répartissez les noisettes de beurre sur le dessus du plat.\n# 4 : Cuisson du gratin dauphinois\nEnfournez votre gratin dauphinois pendant 45 min à 1 heure, jusqu’à ce qu’il soit bien doré.", "prepTime": "20min", "cookTime": "1h", "yield": "6", "categories": [], "text": "Recette incontournable de la gastronomie française, le gratin dauphinois fait son apparition officielle en 1788 dans la province du Dauphiné, lors d’un repas servi aux officiers de la ville de Gap. Généreux, savoureux et facile à préparer, ce plat traditionnel à base de pommes de terre et de lait s’apprécie tout particulièrement durant la période hivernale. Servez-le en guise de plat unique ou d’accompagnement pour un repas en famille sous le signe de la convivialité ! Place à la recette du gratin dauphinois simplissime !", "link": "https://www.cuisineaz.com/recettes/gratin-dauphinois-simplissime-7094.aspx", "nutrition": "**Calories** 846", "favorite": false}, {"title": "Nouilles Udon au bœuf", "ingredients": "# Ingrédients pour 2 personnes:\nNouilles udon\n500g de bœuf haché\n1/2 oignon\nUne poignée de champignons\nail\n2 CAS sauce soja\n3 CAS sauce aigre douce\n1 CAS miel, sauce huitre, huile de sésame,\n2-3 CAS d’eau\n1 CAC paprika, graine de sésames\n2 œufs", "instructions": "# Etapes:\nFaire fondre les oignons et les champignons + ail dans une poêle,\nPréparer la sauce\nAjouter le boeuf haché dans la poele et dès qu’il commence à cuire, ajouter la sauce\nLaisser cuire 5 bonnes minutes à feu doux/moyen\nFaire cuire les nouilles udon\nLes ajouter à la poele\nDresser avec un jaune d’œuf si vous le souhaitez !", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DP37qCWDNtc", "nutrition": "", "favorite": false}, {"title": "Spicy Orzo", "ingredients": "# Pour 2-3 personnes :\n200g d’orzo\n200g de poulet\n1 cac d’ail en poudre\n1 cac de paprika\nSel - poivre\n1 cas d’huile d’olive\n20g de beurre\n100g de champignons\n100g de brocolis\n1 oignon\n2 gousses d’ail\n60g de tomates séchées\n1 cas de concentré de tomate\n700ml de bouillon (volaille)\n15cl de crème légère\n50g de parmesan\n8g de persil\nSauce pimentée", "instructions": "Assaisonner les morceaux de poulet avec de l’ail, du paprika, du sel et du poivre. Les faire dorer quelques minutes dans une poêle avec un filet d’huile, la moitié du beurre et les réserver.\nDans la meme poêle, ajouter le reste du beurre avec les champignons, les brocolis, les gousses d’ail émincées, les tomates séchées coupées en petits morceaux, les pâtes, le concentré de tomates et bien mélanger.\nVerser ensuite le bouillon et mélanger jusqu’à ce que les pâtes soient bien aldente. En fin de cuisson ajouter la crème, le parmesan, le persil, bien mélanger et remettre les morceaux de poulet.\nVous pouvez ajouter un peu de sauce piquante si vous aimez ça et c’est déjà prêt 🧡", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DPdhlU9DKXt", "nutrition": "", "favorite": false}, {"title": "Shakshuka express", "ingredients": "* 4 œufs\n* 1 boîte ratatouille bio faible en matière grasse (600g )\n* Quelques brin de coriandre\n* Quinoa cuit", "instructions": "Dans un plat allant au four , verse ta ratatouille\nCasse les œufs dedans. Laisse cuire 20 min a 180° ou jusqu’à ce que les blancs soient pris .\nPendant ce temps, fais chauffer le quinoa cuit dans une casserole pendant 15 min\nUne fois les œufs cuits à ton goût, retire du four et dispose ton quinoa et la Shakshuka chaudedans tes tupperware", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DHdX1BkAXEP", "nutrition": "", "favorite": false}, {"title": "Gratin de butternut, brocolis  et mozza", "ingredients": "GRATIN butternut / brocolis / mozza 🔥🍂\n# Pour 3 personnes :\n1 butternut\n1 oignon rouge\n1 cac d’ail\n130g de brocolis\n1 mozza (125g)\n45-50 cl de crème\n1 bouillon de volaille\n70g de cheddar râpé\n10g de basilic", "instructions": "Éplucher, vider et couper finement le butternut. Émincer l’oignon et couper le brocolis en petits morceaux.\nDisposer dans le fond d’un plat, la moitié du butternut et des oignons, l’ail et les morceaux de mozza. Ajouter ensuite une partie de la crème, les brocolis, le basilic et le bouillon émietté.\nRecouvrir le tout avec les restes de butternut, d’oignons et de crème, ajouter le cheddar rapé et un peu de poivre\nCuisson 40min à 200 degrés", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DPBLTTADIVs", "nutrition": "", "favorite": false}, {"title": "Pad thaï (Nouilles de riz sautées au poulet)", "ingredients": "500 g Poitrine de poulet désossée\n500 g Fève(s)\n250 g Nouille de riz\n6 Oignon(s) vert(s)\n4 quartier(s) Citron(s) vert(s)\n2 Poivron(s)\n3 gousse(s) Ail\n2 Œuf(s)\n125 g Coriandre fraîche\n125 g Cacahuète(s) sans sel\n125 ml Sauce chili douce\n80 ml Sauce nuoc mam\n3 c. à soupe Jus de citron(s) vert(s)\n2 c. à soupe Huile d'arachide\n1 c. à café Tabasco", "instructions": "# 1 : Cuisson des nouilles\nPortez à ébullition une grande casserole d'eau. Jetez-y les nouilles et retirez la casserole du feu. Laissez reposer 3 à 4 min jusqu'à ce qu'elles aient ramolli. Remuez à l'aide d'une fourchette pour bien les séparer. Égouttez, rincez à l'eau froide et réservez.\n# 2 : Préparation de la sauce\nDans un bol, mélangez la sauce au piment chili douce, le nuoc mâm, le jus de citron vert et le tabasco. Réservez.\n# 3 : Cuisson des légumes\nDans un wok, chauffez une cuillère à soupe d'huile à feu moyen à vif. Faites-y revenir l'ail haché finement et les poivrons coupés en lamelles pendant 4 min. Réservez.\n# 4 : Cuisson du poulet\nChauffez le reste de l'huile dans le wok à feu vif et faites-y cuire le poulet émincé pendant 4 à 5 min en mélangeant, jusqu'à ce qu'il soit bien doré. Réservez.\n# 5 : Préparation du Pad Thaï\nRéduisez à feu moyen. Dans le wok, ajoutez les œufs légèrement battus et laissez cuire pendant 1 min, jusqu'à ce qu'ils soient fermes. Ajoutez les fèves germées, la moitié des oignons verts hachés finement et la moitié de la coriandre ciselée. Ajoutez ensuite les nouilles et les poivrons réservés.\n# 6 : Préparation du Pad Thaï\nPoursuivez la cuisson en continuant de mélanger pendant 1 min. Ajoutez le poulet et le mélange de sauces réservé. Remuez en soulevant délicatement les nouilles pour bien les enrober.\n# 7 : Préparation du Pad Thaï\nAjoutez la moitié des cacahuètes hachées grossièrement et laissez sur le feu encore 1 min.\n# 8 : Présentation de l'assiette\nServez le pad thaï parsemé du reste des oignons verts, de la coriandre et des cacahuètes. Décorez d'un quartier de citron vert.", "prepTime": "20min", "cookTime": "15min", "yield": "4", "categories": [], "text": "Aujourd'hui, on embarque pour la Thaïlande ! Au menu : une bouffée d'exotisme et une explosion de saveurs avec cette recette de pad thaï, aussi parfaite qu'inratable pour régaler vos invités. Des nouilles de riz, du poulet, des poivrons, des oignons verts, de la sauce au piment, du nuoc mâm, de la coriandre, du citron vert, des cacahuètes... Un feu d'artifices de goûts pour un dépaysement total et immédiat !", "link": "https://www.cuisineaz.com/recettes/pad-thai-nouilles-de-riz-sautees-au-poulet-79288.aspx", "nutrition": "**Calories** 819", "favorite": false}, {"title": "Meat Pie", "ingredients": "400g de boeuf\n1 oignon\n2-3 gousses d'ails\n1 carotte\n1 branche de celeri\n2-3 brins de thym\n2 feuilles de laurier\nBière type stout\nBouillon de boeuf\n1 Pate brisé\n1 oeuf", "instructions": "Pour la préparation de la recette de la meet pie suivre la vidéo !", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DQwylewiPmk", "nutrition": "", "favorite": false}, {"title": "Tacos de pulled pork au guacamole, cheddar et fried onions", "ingredients": "# Pour le pulled pork :\n1,2 kg d’échine de porc\n2 cuil. à soupe d’huile d’olive\n3 gousses d’ail\n10 cl de vinaigre de cidre\n15 cl de jus de mangue\n20 cl de bière mexicaine (Corona ou Sol)\nle jus de 4 citrons verts\n½ cuil. à café de piment\n2 cuil. à soupe de ketchup\n1 cuil. à café de sel\n# Pour le guacamole :\n2 avocats\nle jus de 1 citron vert\n8 brins de coriandre\n½ oignon rouge\n½ tomate\n1 cuil. à soupe d’huile d’olive\nsel\n# Pour la garniture :\n100 g de cheddar râpé\n12 galettes de maïs spéciales tacos\n2 cuil. à soupe d’oignons frits", "instructions": "Préparez le pulled pork Coupez l’échine de porc en cubes. \nFaites chauffer l’huile dans une cocotte et ajoutez les morceaux de viande. Faites-les dorer sur toutes les faces. \nPendant ce temps, épluchez et hachez l’ail, puis ajoutez-le dans la cocotte. Déglacez avec le vinaigre, décollez bien les sucs de cuisson en grattant le fond de la cocotte, puis versez le jus de mangue et la bière. Ajoutez le sel, le jus des citrons verts, le piment et le ketchup. \nLaissez cuire à feu très doux pendant 2 h. Surveillez bien la cuisson et ajoutez un peu d’eau si nécessaire. \nCommencez à effilocher la viande au fur et à mesure qu’elle cuit. \nPendant ce temps, râpez le cheddar et réservez-le au frais. \nPréparez le guacamole Coupez les avocats en deux, ôtez le noyau et prélevez la chair à l’aide d’une cuillère à soupe. \nEcrasez-la grossièrement et mélangez-la au jus de citron vert. Salez légèrement. \nLavez les feuilles de coriandre, séchez-les et ciselez-les. \nEpluchez l’oignon et hachez-le. Hachez également la chair de la tomate. \nMélangez le tout à la chair d’avocat, puis incorporez l’huile d’olive et salez légèrement. \nLorsque la viande est cuite, effilochez-la bien et imbibez-la de sauce. \nPliez les galettes en deux, garnissez-les de guacamole et de pulled pork. Parsemez de cheddar et d’oignons frits. Servez aussitôt. Recette extraite de C’est bon… mais c’est gras… mais tant pis ! de Coralie Ferreira, Hachette Cuisine", "prepTime": "", "cookTime": "", "yield": "4", "categories": [], "text": "", "link": "https://www.femina.fr/recette/tacos-de-pulled-pork-au-guacamole-cheddar-et-fried-onions", "nutrition": "", "favorite": false}, {"title": "Effiloché d’épaule de porc à la bière et au miel", "ingredients": "1 épaule entière de porc avec os (~2 kg)\n33 cl de bière brune (type Guinness ou une bière ambrée pour plus de douceur)\n3 c. à soupe de miel\n2 c. à soupe de moutarde à l’ancienne\n3 gousses d’ail hachées\n1 c. à café de paprika fumé\n1 c. à café de cumin moulu\n1 c. à café de sel\nPoivre noir au goût\n2 oignons émincés\n2 c. à soupe d’huile d’olive\n2 c. à soupe de vinaigre de cidre (optionnel, pour une touche acidulée)\n2 feuilles de laurie", "instructions": "Dans un bol, mélange le miel, la moutarde, l’ail, le paprika, le cumin, le sel et le poivre.\nBadigeonne généreusement l’épaule de porc avec cette marinade et laisse reposer au moins 1 heure (ou toute une nuit au frigo pour encore plus de saveurs).\nPréchauffe ton four à 150°C (chaleur traditionnelle).\nDans une cocotte en fonte (ou un plat à four profond), fais revenir les oignons avec l’huile d’olive jusqu’à ce qu’ils soient dorés.\nDépose l’épaule de porc sur les oignons, ajoute la bière, le vinaigre de cidre et les feuilles de laurier.\nCouvre hermétiquement avec du papier aluminium (ou le couvercle de la cocotte).\nEnfourne et laisse cuire 4 heures en arrosant la viande avec son jus toutes les heures.\nEffilocher la viande\nSors la viande du four et laisse-la reposer 10 minutes .\nÀ l’aide de deux fourchettes, effiloche la chair en petits morceaux.\nMélange l’effiloché avec le jus de cuisson pour bien l’imbiber.\nTacos effilochés : Garnir des tortillas avec l’effiloché, de la coriandre et une sauce barbecue maison.\nPommes de terre rôties : Accompagner de pommes de terre au four et d’une sauce au yaourt.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://leclerc-pont-labbe.fr/effiloche-depaule-de-porc-a-la-biere-et-au-miel/", "nutrition": "", "favorite": false}, {"title": "Pâtes aux oignons", "ingredients": "# Ingrédients pour 2 personnes:\n2 oignons\nAil\nCrème (1/2 bouteille)\nBouillon (2 bonnes louches)\nFromage de votre choix (parmesan pour ma part)\nPâtes", "instructions": "# Etapes:\nCouper les oignons en lamelles\nLes faire caraméliser à feu doux/moyen avec de l’ail\nDéglacer avec du bouillon\nAjouter la crème et laisser cuire à feux doux 10 minutes\nAjouter du parmesan\nAjouter les pâtes", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DQ9j5zsDK8b", "nutrition": "", "favorite": false}, {"title": "Fondue de poireaux au citron & patates douces caramélisée", "ingredients": "# Pour 3 personnes :\n2 gros poireaux\n3-4 patates douces\n4 cas d’huile d’olive\n2 cas de soja salé\n15g de beurre\n1 cas de sucre roux\n1 cac d’ail en poudre\n1 bouillon émietté\n40cl de crème légère\n40g de parmesan\nLe zeste d’1 citron\nPersil", "instructions": "Éplucher et couper des tranches de patate douce. Les quadriller à l’aide d’un couteau puis les déposer sur une plaque de cuisson avant de les badigeonner du mélange huile d’olive / soja.\nCuisson 25 min à 190 degrés\nLaver et émincer les poireaux. Faire fondre le morceaux de beurre dans une poêle, ajouter les poireaux, le sucre, l’ail et le bouillon. Laisser cuire à feu moyen une dizaine de minutes. Ajouter ensuite la crème, le parmesan, le persil, bien mélanger et couvrir pour 10 min de cuisson.\nC’est tellement simple et bon comme recette et cette association est complètement dingue, vous devez absolument tester ça 🤤🤤", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DPhD5aEjIYL", "nutrition": "", "favorite": false}, {"title": "Curry de pois chiches", "ingredients": "# Ingrédients pour 2 personnes:\n1/2 oignon\nAil\nPois chiches\n1 CAC Cumin, curry\nSel\n3-4 CAS de sauce tomate\nUn brique de lait de coco OU crème\nRiz (optionnel)", "instructions": "# Etapes:\nCouper les oignons et les faire fondre dans une poêle\nAjouter de l’ail, cumin, curry, sel\nAjouter la sauce tomate avec un petit peu d’eau pour avoir une sauce.\nLaissez cuire environ cinq minutes à feu doux\nAjouter le lait de coco ou la crème et laisser cuire cinq à 10 minutes à feu doux encore\nAjouter les pois chiches\nLaisser sur le feu encore cinq minutes\nC’est prêt !\nServir avec du riz si vous souhaitez 😋", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DRCJkXujIIT", "nutrition": "", "favorite": false}, {"title": "Chou-fleur Cuit au Four à la Coréenne", "ingredients": "1 chou-fleur moyen\n2 cuillères à soupe d’huile d’olive\n2 cuillères à soupe de gochujang (pâte de piment coréenne)\n1 cuillère à soupe de sauce soja\n1 cuillère à soupe de miel (ou sirop d’érable pour une version vegan)\n2 gousses d’ail, émincées\n1 cuillère à café de gingembre frais, râpé\n1 cuillère à café de sésame grillé\n2 oignons verts, émincés (pour la garniture)\nSel et poivre au goût", "instructions": "# Pour réaliser ce chou-fleur cuit au four à la coréenne, suivez ces étapes simples :\nPréchauffez le four : Préchauffez votre four à 200°C (400°F).\nPréparez le chou-fleur : Lavez le chou-fleur et coupez-le en fleurettes de taille uniformes\nFaites la marinade : Dans un grand bol, mélangez l’huile d’olive, le gochujang, la sauce soja, le miel, l’ail émincé et le gingembre râpé.\nEnrobez le chou-fleur : Ajoutez les fleurettes de chou-fleur dans le bol et mélangez bien jusqu’à ce qu’elles soient toutes enrobées de marinade.\nDisposez sur une plaque : Étalez les fleurettes marinées sur une plaque de cuisson recouverte de papier sulfurisé en une seule couche.\nAssaisonnez : Saupoudrez de sel et de poivre selon votre goût.\nFaites cuire : Enfournez la plaque et faites cuire pendant 25 à 30 minutes, ou jusqu’à ce que le chou-fleur soit doré et tendre.\nAjoutez du sésame : À la fin de la cuisson, parsemez le chou-fleur de graines de sésame grillées pour une touche finale croquante.\nGarnissez : Avant de servir, ajoutez les oignons verts émincés sur le dessus pour une belle présentation.\nServez chaud : Dégustez votre chou-fleur cuit au four à la coréenne immédiatement, chaud, en accompagnement ou en plat principal.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "Le chou-fleur cuit au four à la coréenne est un plat incroyablement savoureux et réconfortant qui saura ravir vos papilles. Ce légume, souvent sous-estimé,", "link": "https://platsduterroir.com/chou-fleur-cuit-au-four-a-la-coreenne-une-recette-incroyable-ultime/print/8865/", "nutrition": "", "favorite": false}, {"title": "Choux de Bruxelles rôtis au bacon et à la moutarde", "ingredients": "3 tranches de bacon, coupées en petits dés\n15 ml (1 c. à soupe) d’huile d’olive\n720 g (6 tasses) de choux de Bruxelles, coupés en deux\n180 ml (3/4 tasse) de bouillon de poulet ou de jus de pomme\n15 ml (1 c. à soupe) de moutarde à l’ancienne", "instructions": "# Choux de Bruxelles rôtis au bacon et à la moutarde\nDans une grande poêle antiadhésive à feu moyen-élevé, dorer le bacon dans l’huile. Retirer le bacon à l’aide d’une écumoire. Réserver sur une assiette. Conserver le gras dans la poêle.\nDans la même poêle, dorer les choux dans le gras chaud. Saler et poivrer. Déglacer avec le bouillon et la moutarde. Porter à ébullition et laisser mijoter à feu moyen 10 minutes ou jusqu’à ce que les choux soient tendres et que le bouillon soit évaporé en remuant fréquemment, . Rectifier l’assaisonnement.\nTransvider dans un plat de service et parsemer de bacon.", "prepTime": "15min", "cookTime": "15min", "yield": "6 portion(s)", "categories": [], "text": "Choux de Bruxelles rôtis au bacon et à la moutarde", "link": "https://www.ricardocuisine.com/recettes/6480-choux-de-bruxelles-rotis-au-bacon-et-a-la-moutarde", "nutrition": "**Calories** 115 calories", "favorite": false}, {"title": "Hachis parmentier de canard à la patate douce", "ingredients": "400 g de pomme de terre\n800 g de patate douce\n20 g de beurre\n15 cl de crème liquide\n1 pincées de sel\n1 pincées de poivre\n1 pincées de muscade\n4 cuisses de canard confites\n1 gousses d'ail\n1 cuillères à café de vinaigre balsamique\n20 cl de fond de veau\n1 pincées de sel\n1 pincées de poivre", "instructions": "# Purée :\nÉplucher et mettre à cuire les patates douces et les pommes de terre dans l'eau bouillante.\nUne fois cuits, essorer et passer au moulin.\nDans une petite casserole, faire chauffer la crème et le beurre. Les incorporer délicatement à la purée à l'aide d'une spatule, sans trop remuer.\nSaler, poivrer et ajouter une pincée de muscade pour l'assaisonnement.\n# Hachis :\nPréchauffer le four à 210°C (thermostat 7).\nChauffer légèrement les cuisses de canard pour faire fondre la graisse.\nRetirer la peau et les os des cuisses puis les hacher grossièrement.\nHacher l'ail et faites chauffer le fond de veau.\nDans un saladier, mélanger les cuisses de canard hachées, l'ail, le vinaigre balsamique et le fond de veau chaud.\nDresser dans un plat à gratin ou, si vous avez la possibilité, dans des mini-cocottes !\nCommencer par une fine couche de purée, puis une couche de canard, et ainsi de suite.\nFinir par une couche de purée puis passer le plat quelques min au four pour colorer légèrement.\nAccompagner d'une petite salade verte.", "prepTime": "20min", "cookTime": "20min", "yield": "4 Personnes", "categories": [], "text": "", "link": "https://www.marmiton.org/recettes/recette_hachis-parmentier-de-canard-a-la-patate-douce_308261.aspx", "nutrition": "", "favorite": false}, {"title": "Ces brochettes de poulet satay", "ingredients": "Ingrédients 🧑🏽‍🍳\nPoulet\n1 cas de pâte de curry rouge\n1 cas de beurre de cacahuète\n3 cas de sauce soja\n20cl de lait de coco\nCacahuète\n( Coriandre )", "instructions": "Commence par faire la marinade, mélange le curry rouge, le beurre de cacahuète, sauce soja et le lait de coco puis trempe le poulet en morceaux à l’intérieur.\nForme tes brochettes sur des pics en bois puis fais les cuire à la poêle.\nUne fois que les brochettes sont cuites, dans la même poêle, fais réchauffer la sauce.\nTu peux ajouter des noix concassées et de la coriandre au moment de servir ( si tu aimes )\nBon appétit !", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DRpeqyUCKEM", "nutrition": "", "favorite": false}, {"title": "Dahl de lentilles corail et potimarron", "ingredients": "1 potimarron\n200 g lentilles corail\n1 cm gingembre (frais)\n2 échalote\n1 cuillère à café pâte de curry rouge\n3 cuillère à café curry (doux)\n1/2 cuillère à café cumin (moulu)\nhuile d'olive\nsel et poivre", "instructions": "Epluchez et ciselez finement les échalotes. Coupez le potimarron en deux, ôtez les graines, pelez-le (vous pouvez conserver la peau s'il est bio) et coupez-le en petits cubes. Pelez et rapez le gingembre.\nPortez un grand volume d'eau à ébulition et faites-y cuire les dés de potirmarron jusqu'à ce qu'ils soient tendres (environ 10 minutes). Egouttez et réservez.\nDans une cocotte, faites revenir les échalotes jusqu'à ce qu'elles deviennent translucides. Ajoutez la pâte de curry rouge et les lentilles corail. Mélangez pour enrober puis ajoutez le double de volume des lentilles en eau. Portez à ébullition puis laissez cuire à frémissement pendant 10 minutes.\nAjoutez, le potimarron cuit, le curry doux, le gingembre râpé et le cumin. Mélangez bien et servez avec du riz blanc. Vous pouvez parsemer de noisettes concassées pour apporter du croquant.", "prepTime": "15min", "cookTime": "15min", "yield": "4 personnes", "categories": [], "text": "Un délicieux dahl à base de lentilles corail et cubes de potimarron", "link": "https://cuisine-addict.com/dahl-lentilles-corail-potimarron/", "nutrition": "**Taille des portions** 1 portion\n**Calories** 305 kcal\n**Lipides** 1 g\n**Acides gras saturés** 1 g\n**Acides gras insaturés** 2 g\n**Sel** 18 mg\n**Glucides** 62 g\n**Fibres** 21 g\n**Sucres** 10 g\n**Protéines** 16 g", "favorite": false}, {"title": "Velouté de carottes et orange aux épices", "ingredients": "1,2 l de bouillon de légumes ou bouillon de poule\n800 g de carottes\n150 g de crème liquide entière ( 30% de MG )\n1 orange\n1 oignon\n1 filet d'huile d'olive\n1 c. à c. de cumin en poudre\n1 c. à c. de curcuma\nSel ou sel fin\nPoivre", "instructions": "Dans une cocotte, faire revenir un peu d'huile d'olive et les oignons émincés. Laisser suer sans coloration quelques minutes. Pendant ce temps, éplucher et couper les carottes en rondelles. Puis les ajouter dans la cocotte.\nAjouter les épices, sel, poivre, zestes d'orange, jus de l'orange, la crème et terminer par le bouillon. Les carottes doivent être recouvertes de 1 cm environ. Porter à ébullition et faire cuire 10 à 15 minutes en vérifiant la cuisson à l'aide d'une pointe de couteau.\nMixer, vérifier l’assaisonnement et servir.", "prepTime": "10min", "cookTime": "20min", "yield": "4 personnes", "categories": [], "text": "Rien de tel qu'un bon velouté de carottes maison pour un teint optimal et une pêche d'enfer ! Une recette facile à faire toute l'année.", "link": "https://www.750g.com/veloute-de-carottes-r203841.htm", "nutrition": "", "favorite": false}, {"title": "Dahl de lentilles corail", "ingredients": "30 cl de lentilles corail\n5 tomates\n4 carottes\n25 cl de lait de coco (soit une petite brique)\n1 gousses d'ail hâché\n1 cuillères à soupe de concentré de tomates\n1 cuillères à soupe de curcuma\n1/2 cuillères à café de cumin\n1/2 cuillères à café de gingembre\n1 cuillères à soupe d'huile de tournesol (pour la cuisson)", "instructions": "Laver les tomates et les découper en dés. Peler les carottes, et les découper en fines rondelles.\nDans une casserole, verser les lentilles corail et couvrir d'eau. Porter à ébullition. Laisser cuire pendant 10 min environ, jusqu'à complète absorption de l'eau. Retire du feu et laisser reposer.\nDans une sauteuse, verser l'huile et chauffer. Y ajouter l'ail qui dorera pendant une petite minute. Verser ensuite les légumes et saupoudrer avec les épices. Ajouter enfin le concentré de tomate.\nVerser le lait de coco et laisser mijoter environ 10 min. sans couvrir.\nEnfin, ajouter les lentilles et bien remuer le tout.", "prepTime": "10min", "cookTime": "20min", "yield": "4 personnes", "categories": [], "text": "lentilles corail, tomate, carotte, lait de coco, ail, concentré de tomates, curcuma, cumin, gingembre, huile de tournesol", "link": "https://www.marmiton.org/recettes/recette_dahl-de-lentilles-corail_166862.aspx", "nutrition": "", "favorite": false}, {"title": "Wok de boeuf saveurs pot-au-feu", "ingredients": "6 pièce(s) Pavé(s) de boeuf de 150g\n3 pièce(s) Carotte(s)\n1 pièce(s) Oignon(s) rouge(s)\n0.25 pièce(s) Chou(x) vert(s)\n1 pièce(s) Navet(s) long\n3 pièce(s) Branche(s) de céleri\n1 pièce(s) Aromate(s) ail, thym, laurier\n6 pincée(s) Sel fin\n3 cl Huile d'olive\n25 cl Eau\n10 g Sucre en poudre\n6 pincée(s) Piment d'Espelette", "instructions": "# La préparation des ingrédients\nLaver tous les légumes. Éplucher l'oignon rouge et le ciseler en petits cubes.\nÉplucher les carottes et les couper en fines lamelles. Éplucher les navets et les couper en tranches, puis les tailler en petits cubes de 0,5 cm de côté.\nÉmincer le chou vert. Peler et émincer le céleri en fines lamelles.\nCouper la viande en gros cubes d'environ 3 cm de côté.\n# La cuisson et le dressage\nDans un wok bien chaud, disposer un filet d'huile d'olive puis saisir vivement le boeuf sur toutes ses faces. Le réserver lorsqu'il est bien coloré.\nDans le même wok, verser à nouveau un filet d'huile d'olive et faire suer l'oignon avec une pincée de sel fin afin de récupérer tous les sucs. Ajouter les carottes et les navets, une pincée de sel et le sucre. Caraméliser légèrement, puis ajouter le chou, le céleri, le thym, l'ail et le laurier ainsi qu'un peu de sel. Mouiller à l'eau, porter à ébullition, puis couvrir et laisser cuire pendant 5 à 10 min.\nDès que les légumes sont cuits, ajouter la viande afin de la réchauffer. Assaisonner de sel fin, mélanger et cuire quelques instants.\n# Le dressage\nDresser en assiettes creuses et colorer avec quelques pincées de piment d'Espelette. Déguster sans attendre.", "prepTime": "17min", "cookTime": "15min", "yield": "6 personnes", "categories": [], "text": "Un wok de boeuf aux légumes du pot-au-feu cuits dans un bouillon parfumé.", "link": "https://www.atelierdeschefs.fr/recettes/11945/wok-de-boeuf-saveurs-pot-au-feu/", "nutrition": "", "favorite": false}, {"title": "Taco de magret de canard aux pêches, rhubarbe et cacao.", "ingredients": "3 pièce(s) Magret(s) de canard\n5 g Cacao en poudre non sucré\n600 g Cerise(s)\n5 pincée(s) Piment d'Espelette\n3 pièce(s) Pêche(s) jaune(s)\n100 g Rhubarbe\n3 pièce(s) Echalote(s)\n6 tour(s) Moulin à poivre\n6 pincée(s) Fleur de sel\n5 cl Huile d'olive\n50 g Miel\n100 g Grué de cacao\n8 pièce(s) Tortilla de maïs\n100 g Roquette", "instructions": "# Pour la viande\nPréchauffer le four à 180C°\nParer le magret et enlever les nerfs. Retirer le gras en trop sur les bords. Quadriller la peau à l'aide d'un couteau sans\nentailler la chair.\nPiler toutes les épices au mortier et ajouter le cacao. Mélanger.\nSaupoudrer la peau et la chair des épices et presser pour faire adhérer.\nChauffer une poêle inox sans matière grasse et saisir les magrets côté peau jusqu'à ce que la peau soit bien dorée.\nEnfourner pendant 10 minutes pour une cuisson rosé.\nDébarrasser les magrets et les poser sur assiette. Couvrir d'une feuille de papier aluminium et laisser reposer.\n# Pour la garniture\nÉplucher et ciseler finement l'échalote, couper les pêches en deux, retirer les noyaux et couper en mirepoix les pêches et la rhubarbe, ne pas éplucher pour garder la couleur rouge de la rhubarbe.\nDans la même poêle de cuisson des magrets, ajouter les échalotes avec une pincée de fleur de sel et laisser suer 1 min. Ajouter le miel puis la rhubarbe en mirepoix, laisser cuire pour 2 min et finir par les nectarines et réserver hors du feu. Assaisonner de sel et de poivre et rectifier l'acidité avec le miel s'il faut.\n# Pour les tortillas\nVous pouvez les chauffer 2 min au grill du four ou à la poêle : elle doit devenir souple et légèrement grillée.\n# Pour le dressage\nDans une assiette déposer deux tortillas l'une sur l'autre, ensuite placer une lit de sauce un peu de roquette et finir par le demi magret, saupoudrer du grué de cacao et un peu de piment d’Espelette.", "prepTime": "10min", "cookTime": "10min", "yield": "6 personnes", "categories": [], "text": "Galette de maïs garni des aiguillettes de canard, servi d'une sauce d'échalotes aux pêches, rhubarbe et cacao.", "link": "https://www.atelierdeschefs.fr/recettes/30856/taco-de-magret-de-canard-aux-peches-rhubarbe-et-cacao/", "nutrition": "", "favorite": false}, {"title": "Couscous express en moins de 30 minutes – Recette facile et rapide", "ingredients": "400 g d'agneau à griller\n4 merguez\n1 carotte\n1 gros navet\n1 courgette\n1 petite boîte de pois chiches\n1/2 boîte de concassé de tomates\n1 oignon\n2 gousses d'ail\n1 c.à.café de sucre\n1 c.à.soupe d'huile pour la cuisson\nSel et poivre\n1 c.à.café de raz el hanout\n1 c.à.café de curcuma\n1 c.à.café de persil séché\n1 c.à.café de coriandre séchée", "instructions": "Chauffer une poêle à feu fort avec l'huile. Saler l'agneau puis le déposer dans la poêle. Une fois l'agneau bien doré d'un côté, déposer les merguez et les faire griller.\nPendant que les viandes cuisent, émincer l'oignon, hacher l'ail, couper la carotte et le navet en fines tranches. Couper des petits tronçons de courgettes.\nUne fois les viandes bien dorées, les débarrasser dans une assiette.\nDans la même poêle, faire revenir les oignons pendant 30 secondes. Ajouter l'ail, la carotte et le navet. Faire revenir pendant 30 secondes puis ajouter le raz el hanout et le curcuma. Saler et remuer brièvement.\nAjouter le concassé de tomates. Remuer puis couvrir les légumes avec de l'eau. Ajouter la cuillère à café de sucre, le persil séché et la coriandre séchée. Remuer, couvrir et laisser cuire 8 minutes.\nPendant que les légumes cuisent, couper l'agneau en morceaux si besoin. Couper les merguez en morceaux.\nAjouter les courgettes dans la poêle. Remuer, couvrir et laisser cuire 4 minutes (si vous aimez les légumes bien fondants, à ce stade, vous pouvez laisser cuire 5 minutes de plus).\nAjouter les pois chiches, les merguez et l'agneau. Remuez, couvrir et laisser cuire 4 minutes de plus.\nC'est prêt à être dégusté !", "prepTime": "10min", "cookTime": "20min", "yield": "4", "categories": [], "text": "Couscous express en moins de 30 minutes – Recette facile et rapide", "link": "https://harmoniecuisine.com/mes-recettes/couscous-express-en-moins-de-30-minutes/", "nutrition": "**Taille des portions** \n**Calories** \n**Lipides** \n**Acides gras saturés** \n**Acides gras trans** \n**Cholestérol** \n**Sel** \n**Glucides** \n**Fibres** \n**Sucres** \n**Protéines** ", "favorite": false}, {"title": "Risotto aux cèpes et Parmigiano Reggiano", "ingredients": "350 g Riz carnaroli\n1 pièce(s) Cube(s) de bouillon de volaille\n1 pièce(s) Oignon(s)\n100 g Parmigiano Reggiano râpé\n70 g Beurre doux\n20 cl Vin blanc sec\n350 g Cèpe(s)\n1 gousse(s) Gousse(s) d'ail\n0.25 botte(s) Persil plat\n3 pincée(s) Sel fin\n4 tour(s) Moulin à poivre\n2 cl Huile d'olive", "instructions": "Préparer les cèpes en retirant la terre des pieds à l'aide d'un couteau, puis laver la tête des cèpes à l'aide d'une brosse à champignons ou d'un papier absorbant. Couper les pieds en cubes et les têtes en tranches épaisses. Hacher l'ail et le persil.\nDans une poêle, faire sauter les cèpes coupés en morceaux à l'huile. Lorsqu'ils sont dorés, ajouter 20 g de beurre, l'ail haché, le persil et assaisonner de sel et de poivre. Ciseler un oignon en petits dés. Dissoudre le cube de bouillon de volaille avec 1 litre d'eau et faire cuire pendant 2 min.\nDans une cocotte, faire suer les oignons avec une pincée de sel. Faire nacrer le riz, ajouter le vin blanc et laisser réduire. Ajouter au fur et à mesure le bouillon de volaille sans cesser de remuer. Dès que le riz est cuit, ajouter les cèpes, le beurre frais puis le parmesan râpé.\nServir en assiettes creuses et déguster aussitôt.", "prepTime": "15min", "cookTime": "40min", "yield": "6 personnes", "categories": [], "text": "Délicieux risotto d'automne agrémenté de cèpes au véritable Parmigiano Reggiano.", "link": "https://www.atelierdeschefs.fr/recettes/17951/risotto-aux-cepes-et-parmigiano-reggiano/", "nutrition": "", "favorite": false}, {"title": "Tajine de poulet", "ingredients": "1.5 kg Poulet\n1.2 kg Carotte(s)\n100 g Raisins secs\n100 g Amande émondée(s)\n2 Abricot(s) sec(s)\n4 Oignon(s)\n2 gousse(s) Ail\n1 Bouquet(s) garni(s)\n1 c. à café Graine de coriandre\n1 c. à café Cumin en poudre\n1 bâton(s) Cannelle\n1 pincée(s) Noix de muscade\n50 cl Bouillon de volaille\n5 cl Huile\n1 pincée(s) Sel\n1 pincée(s) Poivre", "instructions": "Dans une grande cocotte, faites chauffer l'huile d'olive à feu moyen.\nFaites dorer les morceaux de poulet sur toutes les faces. Retirez-les et réservez-les.\nDans la même cocotte, faites revenir les oignons émincés jusqu'à ce qu'ils soient translucides.\nAjoutez les carottes pelées et coupées en rondelles ainsi que les gousses d'ail écrasées.\nAjoutez les épices : graines de coriandre, cumin en poudre, bâton de cannelle et noix de muscade râpée.\nRemuez bien pour que les épices imprègnent les légumes.\nAjoutez le bouillon de volaille et le bouquet garni. Portez à ébullition.\nRemettez les morceaux de poulet dans la cocotte. Couvrez et laissez mijoter à feu doux pendant environ 45 minutes.\nAjoutez les raisins secs, les amandes émondées et les abricots secs coupés en morceaux. Poursuivez la cuisson pendant encore 10 minutes.\nVérifiez l'assaisonnement et servez bien chaud.", "prepTime": "30min", "cookTime": "1h", "yield": "6", "categories": [], "text": "Vous cherchez une manière économique et savoureuse de préparer un plat de poulet délicieux pour votre famille ou vos amis ? Essayez cette recette de tajine de poulet pas chère ! Cette recette utilise des ingrédients simples et peu coûteux pour créer un plat riche en saveurs. Le tajine est un plat traditionnel marocain qui est souvent préparé pour les grandes occasions, mais avec cette recette, vous pouvez le préparer facilement et à moindre coût à la maison. Les épices utilisées dans cette recette sont courantes et peu coûteuses, vous permettant de préparer un repas de qualité sans dépenser beaucoup d'argent. Alors, sortez votre tajine ou votre cocotte, et préparez-vous à déguster un plat de poulet délicieux qui ne vous ruinera pas !", "link": "https://www.cuisineaz.com/recettes/tajine-de-poulet-pas-cher-116134.aspx", "nutrition": "", "favorite": false}, {"title": "Rôti de Veau aux Figues et au Jambon", "ingredients": "1 rôti de veau (le mien il faisait 1kg)\n10 figues séchées\n5 tranches de jambon de pays (on peut en mettre plus 😎)\n2 oignons rouges\n10 cl de porto blanc\n20 cl de fond de veau\n2 gousses d’ail en chemise\n1 bouquet garni\nsel et poivre\nun peu d’huile et quelques grammes de beurre", "instructions": "On ouvre le rôti délicatement, c’est facile en vrai il faut juste prendre son temps. Une fois qu’il est à plat on garni avec les figues coupés en fines tranches et pose le jambon. On le roule et on le ficelle. (Si t’as besoin d’aide pour le ficelage il existe pleins de tutos sur le net, sinon check le compte de Bonne Pitance 😉)\nOn fais revenir le rôti avec du sel et du poivre, dans un mélange d’huile et de beurre pour le marquer et on réserve quelques minutes.\nDans la même cocotte, on fait revenir les oignons coupés en quartiers, on déglace au porto, on rajoute quelques figues séchées coupées en 2 et les gousses d’ail en chemise. On pose le rôti par-dessus avec un bouquet garni et on arrose avec le fond de veau.\nTu peux enfourner dans un four préchauffé à 180 degrés pendant 30 minutes en arrosant le rôti toutes les 10 mn. Quand il est cuit tu emmitoufles le rôti dans du papier alu 5 à 10 minutes pour le laisser reposer.\nTu filtres le jus de cuisson, tu réserves la garniture pour ton accompagnement et tu réduis légèrement le jus avec une noisette de beurre pour la brillance.\nTu peux l’accompagner avec des petites pommes de terre grenaille, et tu peux envoyer la garniture filtrée du rôti avec.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DRrMQ9NjMno", "nutrition": "", "favorite": false}, {"title": "Porc au caramel vietnamien & riz avec des légumes poêlés & de la coriandre", "ingredients": "½ sachet(s) Coriandre\n25 g Oignon nouveau\n1 cm Gingembre frais\n1 pièce(s) Carotte\n1 pièce(s) Poireau\n1 sachet(s) Sauce soja\n150 g Riz\n2 pièce(s) Tranches de carré de porc\n1 sachet(s) Gomasio\n2 cs Huile d'olive\n80 ml Bouillon de volaille\n2 cs Sucre\nselon le goût Poivre et sel", "instructions": "Veillez à bien respecter les quantités indiquées à gauche pour préparer votre recette !\nEffeuillez et ciselez la coriandre. Ciselez séparément le blanc et le vert de l'oignon nouveau.\nRâpez le gingembre, avec la peau si vous le souhaitez (ça pique ! Dosez-le selon votre goût).\nÉpluchez la carotte et coupez-la ainsi que le poireau en demi-lunes de 5 mm.\nPréparez le bouillon avec de l'eau chaude et ajoutez-y le gingembre et la sauce soja.\nPortez une casserole d'eau salée à ébullition pour le riz.\nFaites chauffer un filet d'huile d'olive dans une sauteuse à feu moyen et faites-y revenir le blanc de l'oignon nouveau, la carotte et le poireau. Salez et poivrez.\nLaissez cuire 15-20 min en remuant de temps en temps, ou jusqu'à ce que les légumes soient tendres. Ajoutez un filet d'eau à mi-cuisson pour les attendrir et qu'ils n'accrochent pas.\nPendant ce temps, faites cuire le riz 12-14 min dans la casserole d'eau bouillante, ou jusqu'à ce qu'il soit tendre.\nÉgouttez-le et réservez-le à couvert.\nCoupez le porc en dés de 1-2 cm.\nFaites chauffer un filet d'huile d'olive dans une poêle à feu vif. Faites-y revenir la viande 2-3 min pour la colorer. Réservez-la hors de la poêle.\nBaissez le feu sur moyen, ajoutez, par personne : 1 cs de sucre et 15 ml d’eau dans la poêle avec les sucs de cuisson. Faites cuire jusqu'à ce que la sauce épaississe (le sucre doit fondre et devenir marron clair).\nL'ASTUCE DU CHEF : Soyez vigilant lors de la cuisson du sucre : il va faire des bulles quelques secondes avant de commencer à caraméliser !\nLorsque le caramel est roux, versez le bouillon en une seule fois par-dessus et mélangez bien avec une spatule pour le dissoudre.\nAjoutez la viande et faites-la cuire à feu moyen-vif 4-6 min, ou jusqu'à ce que la sauce ait réduit et soit nappante (ajoutez un tout petit filet d'eau chaude si elle réduit trop).\nL'ASTUCE DU CHEF : Pour nettoyer la poêle, ajoutez de l’eau et portez à ébullition. Le caramel va fondre et il sera simple de nettoyer votre ustensile.\nServez le riz dans les assiettes, puis les légumes et enfin le porc au caramel.\nSaupoudrez de coriandre, du vert d'oignon nouveau et de gomasio (selon votre goût car le gomasio est salé !).\nL'ASTUCE DU CHEF : Si vous n’êtes pas un grand fan de coriandre, réduisez la quantité utilisée ou n’en mettez pas du tout !", "prepTime": "", "cookTime": "", "yield": "2", "categories": [], "text": "Notre viande de porc est 100% origine France* et nos charcuteries origine UE.", "link": "https://www.hellofresh.fr/recipes/porc-au-caramel-vietnamien-and-riz-676585257de812ab26271c2c", "nutrition": "**Taille des portions** 448\n**Calories** 699 kcal\n**Lipides** 22.4 g\n**Acides gras saturés** 4.9 g\n**Sel** 2.6 g\n**Glucides** 92 g\n**Sucres** 24.9 g\n**Protéines** 35.3 g", "favorite": false}, {"title": "Salade à la patate douce, pois chiches, figues et Halloumi", "ingredients": "# Pour 2 personnes (la recette est aussi sur le blog) :\nPatate douce et pois chiches\n1 petite patate douce (environ 300g entière)\n125 grammes de pois chiches en conserve, égouttés\n1 c. à soupe d’huile d’olive\n1 c. à café de paprika fumé\n1 c. à soupe de thym séché (ou herbes de Provence)\n1 c. à café d’ail en poudre\n1 pincée de gros sel\nFigues\n6 figues\n1 filet d’huile d’olive\n1 c. à café de miel\n1 pincée de gros sel\nSalade\n100 grammes d’halloumi\n1 filet d’huile d’olive\n2 poignées de mesclun ou autres pousses\n1 c. à soupe de pistaches concassées (environ 10-15g)\nquelques feuilles de persil frais\nVinaigrette (facultatif)\n1 c. à soupe d’huile d’olive\n1 c. à café de vinaigre de cidre\n1 c. à café de moutarde au miel\nsel et poivre", "instructions": "Préchauffe le four à 200°C, chaleur traditionnelle. Epluche la patate douce et coupez-la en cubes.\nDans un saladier, mélange les pois chiches, la patate douce, l’huile, les épices, le thym et le sel.\nRéparti sur une plaque de cuisson et enfourne pour 40 minutes.\nCoupe les figues en 4. Dispose dans un plat, ajoutez\nle filet d’huile, le miel et une pincée de sel. Enfourne pour 20 minutes (plutôt sur une grille sous la plaque qu’au dessus).\nCoupe l’halloumi en 6 tranches. Fais chauffer une poêle à feu vif avec le filet d’huile. Fais griller l’halloumi sur le premier côté environ 3-4 minutes, baisse à feu moyen et fais griller l’autre côté (environ 3 minutes).\nMélange tous les ingrédients de la vinaigrette dans un petit bol. Sale et poivre à ta convenance. Cisèle le persil.\nDresse les assiettes, ajoute les pistaches concassées et la vinaigrette. Bon appétit!", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DOteiG6grri", "nutrition": "", "favorite": false}, {"title": "Tarte rustique aux poireaux et comté", "ingredients": "# Pâte à tarte :\n200g de farine de blé (T110 ici)\n60g de beurre demi-sel (très) mou\n1 œuf\n25ml d’eau\n1 pincée de fleur de sel\n# Garniture :\n450g de blancs de poireaux\n1 c. à soupe d’huile d’olive\n2 gousses d’ail\n1 c. à soupe de vinaigre balsamique\n2 c. à soupe de moutarde à l’ancienne\n130g de comté\nThym frais\nRâpe le comté.", "instructions": "Dans un saladier, ajoute tous les ingrédients de la pâte à tarte et pétris jusqu’à obtenir une boule de pâte homogène. Réserve au frais.\nÉmince les poireaux.\nFais chauffer une poêle à feu vif avec l’huile, ajoute l’ail pressé, les poireaux et mélange bien. Ajoute ensuite le vinaigre balsamique et fais cuire à feu-moyen vif pendant 10 min environ, que les poireaux soient fondants (ajoute un peu d’eau s’ils attachent).\nPréchauffe le four à 195C, chaleur traditionnelle (PAS TOURNANTE).\nAbaisse la pâte sur une feuille de papier cuisson en un cercle d’environ 30cm.\nPlace sur une plaque, et pique la pâte avec un couteau.\nÉtale sur le fond de tarte la moutarde (en laissant 2-3cm sur le bord).\nAjoute ensuite les 2/3 du comté râpé, puis les poireaux dessus et enfin le reste de fromage.\nRabats les bords puis enfourne dans LE BAS du four pendant 30-35 min, que la tarte soit bien dorée(tu peux la mettre dans le haut du four pour les 3 dernières minutes).\nAjoute du thym frais et déguste!", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DP_0AuqAlIP", "nutrition": "", "favorite": false}, {"title": "Crozets crémeux à la courge butternut, beaufort, champignons et noisettes", "ingredients": "# Pour 2 personnes il te faut :\n250 grammes de courge butternut ou de potimarron\n2 échalotes (ou 1 oignon)\n125 grammes de crozets au sarrasin (ou nature)\n1/2 verre de vin blanc (facultatif)\n500-600 ml bouillon de légumes\n30 grammes de noisettes\n200 grammes de champignons\n1 c. à café de paprika fumé (facultatif)\n50 grammes de beaufort râpé\nhuile d’olive\nsel & poivre\npersil frais", "instructions": "Epluche et coupe la courge butternut en petits cubes (environ 1x1cm).\nEmince les échalotes.\nFais chauffer une sauteuse à feu vif avec un filet d’huile d’olive. Ajoute les échalotes et fais-les revenir 2 minutes.\nAjoute ensuite les crozets et fais-les revenir une minute environ.\nDéglace au vin blanc (facultatif) et mélange bien.\nVerse le bouillon et ajoute les cubes de courge (il faut qu’il y ait assez de bouillon pour tout recouvrir). Baisse à feu moyen et fais cuire, en remuant de temps, pendant environ 20-25 minutes, en ajoutant plus de bouillon si nécessaire.\nIl faut que le bouillon frémisse mais ne bout pas.\nPendant ce temps, hache les noisettes et émince les champignons.\nDans une poêle, ajoute un filet d’huile d’olive, le paprika (facultatif), les champignons et une pincée de sel.\nFais revenir les champignons pendant environ 6-7 minutes (ajoute 1 cs d’eau s’ils attachent).\nQuand le risotto de crozets est cuit (la courge est fondante et les crozets al dente), ajoute le beaufort et mélange bien.\nCisele le persil.\nDresse les bols : crozets à la courge, champignons, noisettes et persil. Sale et poivre si nécéssaire. Déguste!", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/p/DQj98G6AjtU", "nutrition": "", "favorite": false}, {"title": "Galettes de poireaux, pommes de terre et Appenzeller", "ingredients": "# Pour environ 9 galettes il te faut :\n400 grammes de pommes de terre à chair ferme\n150 grammes de poireaux (2 petits)\n20 grammes de fécule de maïs (Maïzena)\n60 grammes d’Appenzeller (ou comté, beaufort, gruyère, etc.)\nsel et poivre\nhuile de cuisson (tournesol ou pépins de raisin)\nciboulette fraîche\n# Sauce au fromage blanc (facultatif) :\n3 c. à soupe de fromage blanc, yaourt, skyr\nciboulette fraîche\nsel et poivre\nCisele la ciboulette ((l’équivalent d’environ 2 c. à soupe).\nDans un petit bol, mélange fromage blanc, sel, poivre et la moitié de la ciboulette.", "instructions": "Epluche et râpe les pommes de terre.\nPresse-les au dessus d’un bol ou de l’évier pour retirer un maximum d’eau/liquide (utilise tes mains ou un torchon).\nEmince les poireaux.\nRâpe le fromage Appenzeller.\nDans un saladier, mélange pommes de terre râpées, poireaux émincés, fromage râpé, la fécule de maïs, sel et poivre.\nFais chauffer une poêle à feu vif avec un fond d’huile de cuisson (1-2cm).\nQuand elle est bien chaude, baisse à feu moyen-vif, et fais cuire les galettes : compte une bonne cuillère à soupe par galette, tasse la préparation pour que les galettes soient fines, et fais-les cuire environ 4-5 minutes de chaque côté qu’elles soient bien dorées. (Il faudra peut-être baisser davantage le feu pendant la cuisson).\nQuand les premières galettes sont cuites, dispose-les sur une feuille de papier absorbant et répéte l’étape précédente avec la préparation restante.\nSers les galettes avec le reste de ciboulette dessus et la sauce. Déguste!", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DQpHTr5AqIY", "nutrition": "", "favorite": false}, {"title": "Sauté de porc au cidre", "ingredients": "📜 POUR LA RECETTE (4 personnes)\n800g d'échine de porc 🐽\n3 c. à café d'épices Kari Gosse 🌶️\n2 carottes 🥕\n250g champignons 🍄\n2 gousse d'ail 🧄\n2 oignons 🧅\n3 c. à s. concentré de tomates 🍅\n1 gros verre de cidre 🍏\n40cl bouillon de volaille 🍵\n1 à 2 c. à soupe de miel 🍯\nPatates pour la purée 🥔\n# 1🔴 Masse tes morceaux de viande avec le mélange d’épice ci dessous :\nCurcuma (1 c. à c)\nGingembre (1 c. à c)\nCumin (1 c. à c)\nCoriandre (1 c. à c)\nClou de girofle (1 c. à c)\nCannelle (1 c. à c)\nCardamome (1 c. à c)\nPiment rouge (2 c. à c)\nPoivre", "instructions": "Evidemment tu peux adapter légèrement les quantités en fonction de tes goûts.\n2🟠 Dans du beurre fais colorer ta viande jusqu’à ce qu’elle soit grillée puis débarrasse là. Ajoute les oignons émincés puis les carottes, l’ail et laisse revenir quelques minutes jusqu’à légère coloration.\n3🟡 La viande retourne dans la cocotte et tu peux y ajouter la grosse cuillère de concentré de tomates.\nCuis comme ça pendant 3 min puis mouille avec le verre de cidre. Laisse évaporer le liquide quasi entièrement puis couvre de bouillon de volaille chaud.\nPlus qu’à couvrir et laisse mijoter pendant 2h.\n30 min avant la fin de cuisson tu peux ajouter les champignons coupés en gros morceaux, le miel et ajuster en sel si besoin.\nLaisse le couvercle entre ouvert jusqu’à la fin de la cuisson.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DShKCmcDHRK", "nutrition": "", "favorite": false}, {"title": "Bao express", "ingredients": "200g farine\n180g yaourt grec\n1 sachet de levure chimique\n300g viande hachée\nAil, sel et poivre\n1/2 oignon\n1/2 blanc de poireau\n1 CAC gingembre\n2 CAS sauce soja\nSauce sriracha\nCoriandre", "instructions": "# Etapes:\nPétrir la farine avec le yaourt et la levure\nCouvrir et laisser reposer le temps de faire la farce\nMélanger la viande avec tous les ingrédients listés au dessus\nSéparer la pâte en 8 pâtons\nEtaler les pâtons, ajouter la farce au centre et refermer en pliant les bords comme sur la vidéo\nCuire dans un panier vapeur pendant 15 minutes\nLes brioches ont bien gonflées, elles sont cuites\nLes faire dorer à la poêle\nC’est prêt !", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DTQVTWuDPGu", "nutrition": "", "favorite": false}, {"title": "Grilled cheese à l'italienne", "ingredients": "4 tran. Pain de mie\n2 càc Sauce pesto\n4 tran. Jambon cru (Prosciutto)\n1 poignée Salade (roquette)\n80 g Mozzarella (boule)", "instructions": "Coupez la mozzarella en rondelles.\nÉtalez le pesto sur les tranches de pain de mie.\nSur l'une des deux tranches, ajoutez la mozzarella suivi du jambon cru et de la roquette.\nRefermez le grilled-cheese avec la seconde tranche de pain de mie, côté pesto vers le bas.\nFaites fondre une noisette de beurre dans une poêle, sur feu moyen. Faites revenir les grilled cheese 2 minutes sur chaque face, pour qu'ils soient bien dorés. Coupez le feu, couvrez la poêle et laissez reposer hors du feu pendant 1 minute.\nCoupez les grilled cheese en deux ou en quatre. Dégustez aussitôt, c'est prêt !", "prepTime": "3min", "cookTime": "4min", "yield": "1 serving", "categories": [], "text": "Un bon grilled cheese de temps en temps, ça ne peut pas faire de mal !", "link": "https://jow.fr/recipes/grilled-cheese-a-l-italienne-8cchk1udcm2dindc0pe4", "nutrition": "**Calories** 813 kcal\n**Lipides** 33 g\n**Glucides** 87 g\n**Fibres** 4 g\n**Protéines** 38 g", "favorite": false}, {"title": "Soupe de gnocchi façon lasagnes", "ingredients": "# Ingrédients pour environ 4 bols de soupe :\n400g de bœuf haché\n1/2 oignon\nAil\n300g sauce tomate\nSauce sriracha\n1 CAC paprika, sel, poivre, cumin, persil, origan\n6 bonnes louches de bouillon de boeuf\n10-15cl de crème\n500g gnocchi\nParmesan\nRicotta pour le dressage", "instructions": "# Etapes:\nFaire fondre les oignons avec l’ail dans une cocotte\nAjouter la viande hachée et laisser cuire à feu moyen 2-3 minutes\nAjouter les épices, la sauce tomate et la sriracha\nLaisser cuire 3-4 min à feu doux\nAjouter le bouillon et laisser cuire 5 minutes\nAjouter la crème et laisser cuire à couvert 10 minutes\nAjouter le parmesan et les gnocchi\nAttendre que les gnocchis remontent à la surface\nC’est prêt !", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DTXa-qpjJt-", "nutrition": "", "favorite": false}, {"title": "Haricots GRATINÉS, sauce comté / champignons", "ingredients": "# Pour 2-3 personnes :\n350g de champignons\n350g de haricots blancs (déjà cuits)\n15g de beurre\n2 gousse d’ail\n1 cas de moutarde\n30cl de crème légère\n100ml de bouillon\n8g de persil\n120g de comté\nParmesan", "instructions": "Émincer finement les champignons. Dans une poêle faire fondre le beurre, ajouter un filet d’huile d’olive, ajouter les champignons et laisser le griller pendant 10min à feu fort en surveillant. Ajouter la crème, le persil, la moutarde, l’ail, le bouillon, bien mélanger et laisser mijoter 3-4 min.\nDans le fond d’un plat, étaler une partie de la sauce aux champignons, ajouter les haricots blancs, des morceaux de comté et recouvrir le tout avec le reste de sauce. Ajouter du parmesan sur le dessus.\nCuisson 25 min à 200 degrés", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DTYKW0rjDZb", "nutrition": "", "favorite": false}, {"title": "Recette", "ingredients": "Butternut 1 ou 1/2 selon la taille\nSirop d’érable\nHuile d’olive sel poivre\nCumin\n100g de pois chiches\n1/2 bloc de halloumi\n150g de yaourt grec de bonne qualité ( !! )\n1 cac de harissa\n1 cas de tahini liquide\nSel poivre\nUn peu de jus de citron\nToppings : coriandre ou aneth, miel, harissa, amandes émondées grillées", "instructions": "Faites chauffer votre four à 180 avec un plat d’eau à l’étage du dessous pour que ça génère de la vapeur et que votre butternut soit cro beau.\nÉpluchez et coupez le butternut en morceaux. Badigeonnez-le d’huile d’olive, un peu de cumin, sel, un peu de sirop d’érable. Disposez-le sur une plaque allant au four : il ne faut pas que les morceaux se touchent ! Sinon ça ne cuira pas bien. Enfournez pour environ 35min, ou jusqu’à ce que la lame d’un couteau passe facilement + qu’il y ait de jolies parties grillées comme sur la vidéo.\nÉgouttez, séchez les pois chiches dans un torchon. Ajoutez huile d’olive et sel et ajoutez-les au butternut 15min avant la fin.\nMélangez le yaourt avec : tahini, jus de citron, sel, harissa.\nQuand le butternut est cuit, faites griller le halloumi à la poêle avec un beau filet d’huile d’olive - ne salez pas.\nPlacez le yaourt dans les assiettes, ajoutez butternut pois chiches puis le halloumi, terminez avec un filet de miel, d’huile d’olive et aneth ou coriandre. Enjoy 🫶🏻", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DTQZ-x3jN2m", "nutrition": "", "favorite": false}, {"title": "Mafé au poulet au Cookeo", "ingredients": "500 g filets de poulet\n50 cl bouillon de volaille\n200 g patate douce\n2 carotte\n1 oignon jaune\n3 gousse ail\n2 cm gingembre\n70 g concentré de tomates\n2 cuillère à soupe beurre de cacahuètes\n1 cuillère à café paprika fumé\nsel et poivre\nhuile de colza", "instructions": "# Préparation des ingrédients\nEpluchez les patates douces et coupez-les en cubes. Epluchez les carottes et coupez-les en rondelles. Râpez le gingembre. Coupez le poulet en morceaux. Pelez l'oignon et ciselez-le finement. Pelez et dégermez les gousses d'ail.\n# Cuisson\nMettez un peu d'huile dans la cuve de votre Cookeo et faites-y revenir l'oignon ciselé et les gousses d'ail pressées. Ajoutez les morceaux de poulet et laissez dorer 2 minutes. Ajoutez le gingembre râpé, 1 cuillère à café de paprika fumé, salez et poivrez. Ajoutez le concentré de tomate, le bouillon de volaille, les carottes et patate douce, mélangez bien. Lancez la cuisson sous pression pendant 15 minutes.\n# Service\nA la fin de la cuisson, retirez la viande et les légumes, ajoutez le beurre de cacahuètes dans la sauce et laissez réduire quelques minutes en mode \"dorer\" en remuant. Reversez la sauce sur la viande et servez avec du riz ou une autre céréale.", "prepTime": "15min", "cookTime": "20min", "yield": "4 personnes", "categories": [], "text": "Un délicieux plat de poulet au beurre de cacahuètes réalisé facilement et rapidement au Cookeo", "link": "https://cuisine-addict.com/mafe-au-poulet-au-cookeo/#recipe", "nutrition": "**Taille des portions** 1 portion\n**Calories** 363 kcal\n**Lipides** 20 g\n**Acides gras saturés** 6 g\n**Cholestérol** 94 mg\n**Sel** 736 mg\n**Glucides** 20 g\n**Fibres** 4 g\n**Sucres** 7 g\n**Protéines** 26 g", "favorite": false}, {"title": "TARTE POTIMARRON, COMPOTÉE D’OIGNONS ROUGES & ROQUEFORT", "ingredients": "# 👩🏻‍🍳 INGRÉDIENTS (pour 4 personnes) :\n1 pâte (brisée ou feuilletée)\n1 potimarron\n2 oignons rouges\n3 c.à.s de vinaigre balsamique\n2 c.à.s de sucre\n100g de roquefort (ou gorgonzola, chèvre, mozzarella, comté…)\n2 c.à.s de crème fraîche (épaisse ou liquide)\nHuile d’olive, sel, poivre, herbes aromatiques (thym ou romarin)", "instructions": "# LA RECETTE :\n- Préchauffez votre four à 200 degrés.\n- Découpez et videz votre potimarron, puis découpez-le en tranches (vous pouvez garder la peau). Déposez les tranches sur une plaque de cuisson, badigeonnez d’huile d’olive, sel, poivre, et herbes aromatiques. Enfournez pour 20 minutes à 200 degrés.\n- Pendant ce temps-là, découpez finement les oignons et faites les caraméliser dans une poêle avec 3 c.à.s de vinaigre balsamique et 2 c.à.s de sucre. Mélangez jusqu’à ce que les oignons deviennent bien fondants et caramélisés.\n- Piquez votre pâte à tarte avec une fourchette, étalez 3 c.à.s de crème fraîche (ou de soja), puis déposez votre compotée d’oignons, vos tranchez de potimarron et des morceaux de roquefort. Badigeonnez les bords de votre tarte avec du lait (pour plus de légèreté) ou un jaune d’œuf ou de l’huile.\n- Enfournez pour 30 minutes à 180 degrés.\nBonne régalade ! 🥰", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/CzjbCV0KUMO", "nutrition": "", "favorite": false}, {"title": "Blanquette de volaille", "ingredients": "2 pièce(s) Poulet fermier\n6 cl Huile d'arachide\n400 g Oignon(s)\n3 pièce(s) Gousse(s) d'ail\n1 pièce(s) Branche(s) de céleri\n60 cl Vin blanc sec\n2 l Bouillon de volaille\n1 pièce(s) Bouquet(s) garni(s)\n200 g Carotte(s)\n600 g Champignon(s) de Paris\n30 g Beurre doux\n10 pincée(s) Sel fin\n10 g Poivre noir\n80 g Beurre doux\n80 g Farine de blé T55\n40 cl Crème liquide entière\n6 pincée(s) Sel fin\n6 tour(s) Moulin à poivre\n700 g Riz basmati\n6 branche(s) Thym frais\n0.25 botte(s) Persil plat", "instructions": "# Pour la viande\nDécouper les poulets en 8 morceaux et assaisonner.\nRaidir les morceaux de volaille à l'huile.\nÉplucher et ciseler les oignons, écraser les gousses d'ail et émincer le céleri branche.\nAjouter les légumes dans la cocotte et les laisser suer pendant 5 min.\nArroser ensuite le poulet de vin blanc et gratter le fond de la cocotte pour dissoudre les sucs de cuisson. Laisser cuire jusqu'à évaporation du vin.\nPeler les carottes et émincer en rondelles.\nMouiller avec le bouillon de volaille dans la cocotte jusqu’à hauteur, ajouter le bouquet garni et les carottes.\nAssaisonner de sel et de poivre, puis mijoter à feu doux et à couvert pendant 40 min.\nLaver et émincer les champignons.\nSauter les champignons au beurre, assaisonner.\nVérifier la cuisson de la blanquette de volaille.\nDécanter la viande et la garniture.\nPasser le bouillon au chinois, refroidir.\n# Pour la sauce\nRéaliser un roux blanc avec la farine et le beurre.\nAjouter le bouillon de cuisson froid sur le roux chaud.\nCuire jusqu'à épaississement en mélangeant.\nVerser la crème liquide, remuer et rectifier l'assaisonnement.\nVerser la sauce sur la volaille, ajouter les champignons sautés et réserver au chaud.\n# Pour la garniture\nCuire le riz à grande eau avec le thym et du gros sel.\nVérifier la cuisson et réserver.\nÉqueuter et ciseler le persil plat.\n# Pour le dressage\n1- Le riz\n2- La blanquette de volaille\n3- Le persil ciselé", "prepTime": "35min", "cookTime": "1h", "yield": "10 personnes", "categories": [], "text": "Un poulet fermier coupé à cru, cuisiné comme une blanquette de veau accompagné d'un riz blanc parfumé au thym.", "link": "https://www.atelierdeschefs.fr/recettes/32711/blanquette-de-volaille/", "nutrition": "", "favorite": false}, {"title": "Ragoût de carottes et champignons & Polenta", "ingredients": "400 g carottes\n250 g champignons de Paris\n400 g pommes de terre\n1 oignon rouge\n2 gousses ail\n25 cl vin rouge\n1 cuillères à café vinaigre balsamique\n1 feuille laurier\n1 cube bouillon de légumes\nhuile d'olive\nsel et poivre\n125 g polenta\n60 cl lait (animal ou végétal)\nsel et poivre\nparmesan (facultatif)", "instructions": "Pelez l'oignon et émincez-les finement. Epluchez et dégermez les gousses d’ail.\nEpluchez les carottes et pommes de terre. Coupez les carottes en rondelles et les pommes de terre en dés. Brossez les champignons et coupez-les en lamelles.\nMettez un filet d’huile d’olive dans une cocotte et faites-y fondre l’oignon et l’ail pendant 2 minutes. Ajoutez les carottes et pommes de terre et faites cuire en remuant pendant 5 minutes. Ajoutez les champignons et laissez cuire jusqu’à ce qu’ils aient rendu leur eau.\nEmiettez le cube de bouillon sur les légumes, poivrez, ajoutez la feuille de laurier, le vinaigre et mélangez bien. Ajoutez le vin et complétez avec de l’eau à hauteur. Laissez cuire à frémissement pendant 30 minutes.\nPortez le lait à ébullition, salez et poivrez puis ajoutez la polenta en pluie. Laissez cuire à frémissement pendant une vingtaine de minutes jusqu’à ce que la préparation épaississe. Vous pouvez ajouter du parmesan à la polenta hors du feu.", "prepTime": "20min", "cookTime": "45min", "yield": "4 personnes", "categories": [], "text": "Un ragoût traditionnel bien réconfortant en version 100% végétale", "link": "https://cuisine-addict.com/ragout-de-carottes-et-champignons-polenta-un-plat-reconfortant-et-savoureux/", "nutrition": "**Taille des portions** 1 portion\n**Calories** 275 kcal\n**Lipides** 1 g\n**Acides gras saturés** 0.4 g\n**Acides gras insaturés** 0.6 g\n**Cholestérol** 2 mg\n**Sel** 87 mg\n**Glucides** 58 g\n**Fibres** 6 g\n**Sucres** 9 g\n**Protéines** 8 g", "favorite": false}, {"title": "Pâtes au poireau, lardons & fromages", "ingredients": "400 g pâtes sèches\n3 poireaux (environ 400 g)\n200 g lardons fumés\n100 g parmesan \n30 cl crème liquide (animale ou végétale)\n1 cuillère à café moutarde à l’ancienne\nsel et poivre", "instructions": "Nettoyez les poireaux et coupez-les en rondelles.\nFaites revenir les lardons dans une poêle chaude puis ajoutez les poireaux. Mélangez bien, salez et poivrez et laissez cuire environ 10 minutes. A la fin de la cuisson ajoutez la moutarde à l’ancienne, la crème et la moitié du chèvre coupé en dés. Rectifiez l’assaisonnement et laissez cuire à feu doux.\nFaites cuire les pâtes selon les indications du paquet. Egouttez rapidement puis mélangez avec la sauce et servez avec le reste de chèvre en petits dés et des oignons frits (facultatif).", "prepTime": "10min", "cookTime": "20min", "yield": "4 personnes", "categories": [], "text": "Des pâtes crémeuses et onctueuses aux poireaux, lardons et fromage de chèvre", "link": "https://cuisine-addict.com/pates-au-poireau-lardons-chevre/", "nutrition": "**Taille des portions** 1 portion\n**Calories** 697 kcal\n**Lipides** 28 g\n**Acides gras saturés** 11 g\n**Acides gras insaturés** 15 g\n**Acides gras trans** 0.1 g\n**Cholestérol** 45 mg\n**Sel** 450 mg\n**Glucides** 86 g\n**Fibres** 4 g\n**Sucres** 6 g\n**Protéines** 25 g", "favorite": false}, {"title": "Curry de légumes d'hiver", "ingredients": "600 g courge (la chair, en dés)\n400 g navets\n200 g carottes\n1 brocoli\n250 g pois chiche (poids net égoutté)\n50 g lentilles corail\n20 cl lait de coco\n2 oignons jaunes\n2 gousses ail\n1 cuillère à café huile de coco\n1 cuillère à soupe curry\ncuillère à soupe curcuma\nsel et poivre\n240 g boulgour", "instructions": "Pelez les oignons et émincez-les finement. Epluchez et dégermez les gousses d’ail. Epluchez tous les légumes. Coupez les carottes en rondelles. Coupez la courge et les navets en dés. Détaillez le brocoli en fleurettes.\nMettez 1 càc d’huile de coco dans une cocotte et faites-y revenir les oignons et l’ail pendant 2 minutes. Ajoutez le curry, le curcuma, salez et poivrez. Mélangez bien puis ajoutez les légumes.\nLaissez dorer 2 minutes en remuant puis ajoutez les pois chiche égouttés, les lentilles, le lait de coco et 20 cl d’eau. Couvrez et laissez mijoter pendant 20 minutes.\nPendant ce temps, préparez le boulgour selon les indications du paquet et servez bien chaud.", "prepTime": "", "cookTime": "", "yield": "4 personnes", "categories": [], "text": "Un délicieux curry végétarien de saison", "link": "https://cuisine-addict.com/curry-de-legumes-dhiver/", "nutrition": "**Taille des portions** 1 portion\n**Calories** 528 kcal\n**Lipides** 5 g\n**Acides gras saturés** 2 g\n**Acides gras insaturés** 2 g\n**Sel** 151 mg\n**Glucides** 109 g\n**Fibres** 29 g\n**Sucres** 17 g\n**Protéines** 22 g", "favorite": false}, {"title": "Lasagnes à la bolognaise", "ingredients": "1 paquets de lasagnes\n3 oignons jaunes\n2 gousses d'ail\n1 branches de céleri\n1 carottes\n600 g de boeuf haché\n800 g de purée de tomate\n15 cl d'eau\n20 cl de vin rouge\n2 feuilles de laurier\nthym\nbasilic\n3 pincées de muscade râpée\n70 g de fromage râpé\n125 g de Parmesan\nsel\npoivre\n100 g de farine\n125 g de beurre\n1 l de lait", "instructions": "Faire revenir gousses hachées d'ail et les oignons émincés dans un peu d'huile d'olive.\nAjouter la carotte et la branche de céleri hachée puis la viande et faire revenir le tout.\nAu bout de quelques minutes, ajouter le vin rouge. Laisser cuire jusqu'à évaporation.\nAjouter la purée de tomates, l'eau et les herbes.\nSaler, poivrer, puis laisser mijoter à feu doux 45 minutes.\nPréparer la béchamel : faire fondre 100 g de beurre.\nHors du feu, ajouter la farine d'un coup.\nRemettre sur le feu et remuer avec un fouet jusqu'à l'obtention d'un mélange bien lisse.\nAjouter le lait peu à peu.\nRemuer sans cesse, jusqu'à ce que le mélange s'épaississe.\nEnsuite, parfumer avec la muscade, saler, poivrer. Laisser cuire environ 5 minutes, à feu très doux, en remuant. Réserver.\nPréchauffer le four à 200°C (thermostat 6-7).\nHuiler le plat à lasagnes. Poser une fine couche de béchamel puis des feuilles de lasagnes, de la bolognaise, de la béchamel et du parmesan.\nRépéter l'opération 3 fois de suite.\nSur la dernière couche de lasagnes, ne mettre que de la béchamel et recouvrir de fromage râpé. Parsemer quelques noisettes de beurre.\nEnfourner pour environ 25 minutes de cuisson.\nDéguster", "prepTime": "30min", "cookTime": "1h 35min", "yield": "8 personnes", "categories": [], "text": "lasagnes, oignon jaune, ail, céleri, carotte, boeuf haché, purée de tomate, eau, vin rouge, feuille de laurier, thym, basilic, muscade, fromage râpé, Parmesan, sel, poivre, farine, beurre, lait", "link": "https://www.marmiton.org/recettes/recette_lasagnes-a-la-bolognaise_18215.aspx", "nutrition": "", "favorite": false}, {"title": "Croque-monsieur aux champignons et beaufort", "ingredients": "150 grammes de champignons (bruns ici)\n1 oignon jaune\n1 filet d’huile d’olive\n4 tranches de pain (au levain ici)\n40 grammes de beurre (demi-sel (environ, pour beurrer les quatre tartines))\n70 grammes de beaufort\nThym frais", "instructions": "Préchauffez le four à 200C, chaleur traditionnelle.\nNettoyez les champignons puis émincez-les ainsi que l'oignon.\nFaits chauffer une poêle à feu vif avec l’huile ajoutez les champignons et l’oignon et faites cuire à feu moyen-vif pendant environ 8 min, que le tout soit assez fondant.\nCoupez 4 tranches de pain.\nBeurrez chaque tranche.\nSur deux des tranches de pain ajoutez les champignons/oignons, le beaufort râpé et et un peu de thym. Refermez le croque.\nEnfournez à mi-hauteur pendant 10-12 min (vous pouvez mettre le grill pour les 2 dernières minutes - surveille bien que ça ne brûle pas).\nDégustez avec une salade ou autre accompagnement de ton choix!", "prepTime": "10min", "cookTime": "10min", "yield": "2 personnes", "categories": [], "text": "Une recette facile et gourmande de croque-monsieur aux champignons, oignons et beaufort. Vous allez adorer!", "link": "https://clemfoodie.com/2026/01/13/croque-monsieur-aux-champignons-et-beaufort/", "nutrition": "", "favorite": false}, {"title": "Nouilles sautés au bœuf", "ingredients": "# Pour 2 personnes :\n400g de nouilles de riz cuites\n200g de filet de bœuf\n1 oignon\n150g de sauce soja\n2 cas de sauce soja foncé\n1 cas de miel\n1 cas de maïzena\noignon nouveau (optionnel)", "instructions": "On commence par couper finement le bœuf et l’oignon. Dans un bol on mélange le bœuf coupé avec le miel, la maïzena et 50g de sauce soja.  Dans une poêle on fait revenir l’oignon quelques minutes puis on ajoute le bœuf mariné, ainsi que le reste de la sauce soja, la sauce soja foncée (pour donner cette couleur plus foncé) et 50ml d’eau. On remue et on laisse cuire à feu doux, le temps que la sauce s’épaissit puis on ajoute les nouilles de riz, on mélange bien le tout et c’est prêt 😋.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DT7bJbYDGab", "nutrition": "", "favorite": false}, {"title": "Haricots rouges à la mexicaine", "ingredients": "500g de patate douce\n1 oignon rouge\n2 càs de concentré de tomate\n2 càs de sirop d’érable\n2 càs d’épices mexicaines\n1 càc de cannelle\n1 càc de paprika fumé\n1 boite d’haricots rouges (400g)\n2 gousses d’ail\n200ml d’eau (ou plus si besoin)\n1 avocat\nDe la coriandre\n1 citron vert", "instructions": "Epluchez puis coupez la patate douce en cubes. Emincez finement l’oignon.\nDans un plat allant au four ajoutez la patate douce, l’oignon, le concentré de tomates, les épices, le sirop d’érable et l’eau. Salez, poivrez. Remuez bien et enfournez à 200°C pendant 30min.\nPendant ce temps faites cuire du riz et réservez au chaud.\nPréparez le guacamole en écrasant l’avocat avec de la coriandre et un filet de jus de citron vert. Salez et poivrez.\nAu bout de 30 min de cuisson ajoutez les haricots rouges (avec leur jus) et l’ail râpé puis prolongez la cuisson 10min.\nServez avec le riz, le guacamole, du citron vert et de la coriandre. C’est prêt !", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DUgV-wJDawp", "nutrition": "", "favorite": false}, {"title": "Crème d’haricots blancs aux tomates séchées, pommes de terre rôties & haricots blancs crispy", "ingredients": "# La crème d’haricots blancs :\n200g d’haricots blancs en conserve\n60g de tomates séchées\n1 càs de yaourt grec\n1 càs de tahini\n1 gousse d’ail\nLe jus d’un demi citron\nDe l’eau pour la texture\n500g de pommes de terre grenaille\n2 gousses d’ail\n2 càc de paprika\n300g d’haricots blancs en conserve\n60g de feta\n50g de tomates séchées\n1 càc de miel\nDu persil\nPickles oignon rouge", "instructions": "Préchauffez le four à 210°C. Dans un bol râpez les gousses d’ail, ajoutez le paprika et 4/5 càs d’huile d’olive. Salez et poivrez, mélangez.\nCoupez les pommes de terre grenaille en deux. Egouttez les haricots blancs. Ajoutez-les sur une plaque de cuisson. Mélangez avec la marinade au paprika puis enfournez 20-25 min.\nDans un mixeur ajoutez tous les ingrédients pour la crème et mixez. Salez, poivrez et ajustez la quantité d’eau en fonction de la texture désirée.\nPréparez le topping en mélangeant la feta, les tomates séchées émincées, le persil ciselé, le miel, un peu de jus de citron, de l’huile d’olive du sel et du poivre.\nDressez la crème au fond d’une assiette. Ajoutez les pommes de terre, les haricots blancs crispy, le topping aux tomates séchées et quelques pickles d’oignon rouge. C’est prêt !", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DUtN7leDfTp", "nutrition": "", "favorite": false}, {"title": "Poulet à l’orange", "ingredients": "Ingrédients pour 4 personnes 🧑🏽‍🍳\n800 gr de poulet\nNouille de riz\nFécule de maïs ou farine\n1 orange pressée\n6 cas de sauce soja\n3 cas de miel\n1 cas d’huile de sésame\nsel\npoivre", "instructions": "Faire tremper les nouilles de riz dans de l’eau chaud le temps de préparer le reste.\nDécouper le poulet en morceaux et le recouvrir de fécule de Maïs ou de farine. Faites le revenir dans un wok jusqu’à qu’il soit bien cuit.\nDans le même wok, versez toute la sauce. Une fois que le poulet est bien enrobé de sauce, rajoutez les nouilles de riz. ( Vous pouvez rajouter un peu de sauce soja noire pour la couleur foncée )\nContinuez à mélanger pendant 2 minutes le temps que les nouilles finissent la cuisson et servez dans une assiette creuse. Bon appétit !", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DHyaBAVN3Dc", "nutrition": "", "favorite": false}, {"title": "BŒUF SAUTÉ «MIJOTÉ\" AU GINGEMBRE & POIRE - CHINE", "ingredients": "500 g de bœuf en lamelles fines\n1 poire d'automne (Conférence) en lamelles\n2 c. à soupe de sauce soja\n1 c. à soupe de vinaigre de riz\n1 morceau de gingembre frais râpé\n2 gousses d'ail émincées\n1 c. à soupe d'huile\nPoivre\nCébette (optionnel)", "instructions": "Faire chauffer l'huile dans un wok.\nAjouter l'ail et le gingembre.\nAjouter le bœuf et saisir vivement.\nAjouter la poire et mélanger.\nVerser la sauce soja et le vinaigre de riz.\nPoivrer.\nLaisser mijoter 5 minutes à couvert.\nServir immédiatement.\nFaire chauffer l'huile dans un wok.\nAjouter l'ail et le gingembre.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "", "nutrition": "", "favorite": false}, {"title": "LASAGNETTES AUX ARTICHAUTS & CITRON - ITALIE", "ingredients": "400 g de lasagnettes ou tagliatelles larges\n4 fonds d'artichauts (frais ou surgelés)\n1 citron non traité\n20 cl de crème légère\n40 g de parmesan\n2 c. à soupe d'huile d'olive\n1 gousse d'ail\nPoivre", "instructions": "Coupez les artichauts en fines lamelles.\nFaites chauffer l'huile. Ajoutez l'ail émincé.\nFaites revenir les artichauts 5 minutes à feu moyen.\nAjoutez la crème. Laissez réduire légèrement.\nFaites cuire les pâtes al dente.\nAjoute restes pates date la sauceron.\nMélangez hors feu. Incorporez le parmesan.\nPoivrez généreusement.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "", "nutrition": "", "favorite": false}, {"title": "SAUTÉ DE POULET À LA MOUTARDE ET AU CIDRE - FRANCE", "ingredients": "500g de blancs de poulet coupés en dés\n2 c. à soupe de moutarde à l'ancienne\n1 pomme (type Elstar ou Reine des Reinettes) en petits\n1 noix de beurre\nSel, poivre\nbranche de thym (optionnel)\nchampignons (optionnel)\n2 échalotes émincées\n15cl cidre brut\n10cl crème fraîche\n", "instructions": "Faire fondre le beurre dans une grande poêle.\nAjouter les échalotes et les faire revenir 2 minutes.\nAjouter les dés de poulet et les faire dorer sur toutes les faces.\nncorporer la moutarde et mélanger rapidement.\nVerser le cidre et gratter le fond de la poêle.\nAjouter les dés de pomme.\nLaisser mijoter 8 minutes à couvert.\nVerser la crème, saler, poivrer.\nLaisser épaissir 2 minutes à découvert.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "", "nutrition": "", "favorite": false}, {"title": "GNOCCHI POÊLÉS CRÈME- ÉPINARDS-NOISETTES - ITALIE", "ingredients": "800 g de gnocchi frais\n200 g d'épinards\n15 cl de crème\n40 g de noisettes concassées\n1 gousse d'ail\n2 c. à soupe d'huile\nSel, poivre", "instructions": "Faites chauffer l'huile dans une grande poêle.\nAjoutez les gnocchi directement.\nFaites-les dorer 5 à 7 minutes sans les bouillir.\nRetournez-les pour une coloration uniforme.\nAjoutez l'ail émincé.\nIncorporez les épinards. Laissez-les tomber.\nAjoutez la crème. Laissez napper 2 minutes.\nParsemez de noisettes torréfiées.\nServez immédiatement.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "", "nutrition": "", "favorite": false}, {"title": "MIJOTÉ AUBERGINE- AGNEAU EXPRESS À LA CANNELLE - LIBAN •", "ingredients": "2 aubergines en dés\n300 g d'agneau haché\n1 oignon\n400 g de tomates concassées\n1 pincée de cannelle\nHuile, sel, poivre", "instructions": "Faire revenir l'oignon.\nAjouter l'agneau.\nAjouter les aubergines.\nAjouter la cannelle.\nVerser les tomates.\nSaler, poivrer.\nMijoter 15 minutes.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "", "nutrition": "", "favorite": false}, {"title": "NOUILLES VIETNAMIENNES AU BŒUF SAUTÉ & CITRON VERT - VIETNAM", "ingredients": "400 g de nouilles de blé\n300 g de bœuf émincé\n1 carotte\n½½ concombre\n2 c. à soupe de sauce soja\nciroupe huile\nHerbes fraîches (menthe ou coriandre)", "instructions": "ites cuire les nouilles.\nfraîchissez-les légèrement.\nCoupez les légumes en julienne fine.\nSaloi este feuf a ferres vif 1 minute.\nAjoutez la sauce soja. Retirez du feu.\nMélangez nouilles, légumes et bœuf.\nAjoutez jus de citron vert et herbes.\nServez tiède.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "", "nutrition": "", "favorite": false}, {"title": "CARBONNADE FLAMANDE MINUTE - BELGIQUE", "ingredients": "500 g de bœuf en lamelles fines\n2 oignons émincés\n20 cl de bière brune\n1 c. à soupe de moutarde\n1 tranche de pain d'épices (optionnel)\n1 c. à soupe d'huile\nSel, poivre", "instructions": "Faire chauffer l'huile.\nAjouter les oignons et les dorer.\nAjouter la viande et saisir rapidement.\nAjouter la moutarde.\nVerser la bière.\nÉmietter le pain d'épices (optionnel).\nMijoter 12 minutes.\nSaler, poivrer.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "", "nutrition": "", "favorite": false}, {"title": "FEIJOADA EXPRESS - BRÉSIL", "ingredients": "1 boîte de haricots noirs (400 g)\n100 g de lardons\n100 g de chorizo doux\n1 oignon\n1 feuille de laurier\n1 zeste d'orange\nHuile", "instructions": "Faire revenir les lardons et le chorizo.\nAjouter l'oignon.\nAjouter les haricots et leur jus.\nAjouter le laurier.\nAjouter le zeste d'orange.\nMijoter 12 minutes.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "", "nutrition": "", "favorite": false}, {"title": "GUISO RAPIDO DE POIS CHICHES ET CHORIZO - ESPAGNE", "ingredients": "1 oignon émincé\n150 g de chorizo doux en rondelles\n1 boîte de pois chiches (400 g), rincés\n1 poivron rouge ou 2 carottes en dés\n400 g de tomates concassées\n1 c. à café de paprika fumé\n1 filet d'huile d'olive\nSel, poivre", "instructions": "Chauffer l'huile dans une sauteuse.\nAjouter l'oignon et faire revenir 2 minutes.\nAjouter le chorizo et laisser légèrement griller.\nAjouter le paprika et mélanger.\nAjouter les légumes (poivron ou carottes).\nVerser les tomates concassées.\nAjouter les pois chiches.\nSaler, poivrer.\nLaisser mijoter 12 minutes à couvert.\nServir bien chaud.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "", "nutrition": "", "favorite": false}, {"title": "Poulet satay healthy et facile", "ingredients": "1 càc de curry en poudre\n1 càs de sirop d'agave ((ou miel))\n2 càs de sauce soja salée\n1 càc de pâte de curry\n10 cl de lait de coco\n1 petit piment oiseau ((optionnel))\n300 g de blancs de poulet ((ou tofu pour une version végé))\n120 g de riz (poids cru)\n# Pour la sauce :\n1 càs de beurre de cacahuètes 100%\n1 càc de pâte de curry\n1 càs de sirop d'agave ((ou miel))\n2 càs de sauce soja salée\n10 cl de lait de coco\n10 cl d'eau\nquelques cacahuètes concassées\nde la coriandre fraîche", "instructions": "Préparer la marinade : dans un saladier déposer le curry en poudre, le sirop d'agave, la sauce soja, la pâte de curry, le lait de coco et le piment oiseau finement haché (optionnel). Mélanger.\nCouper le poulet en fins morceaux puis les ajouter à la marinade. Mélanger, filmer et réserver au réfrigérateur 30 minutes à 1 heure.\nCuire le riz à la casserole ou au cuiseur à riz.\nPour la sauce, déposer dans un saladier le beurre de cacahuètes, la pâte de curry, le sirop d'agave, la sauce soja, le lait de coco et l'eau. Mélanger et faire chauffer le tout à feu moyen jusqu'à ce que la sauce réduise.\nCuire le poulet mariné environ 7 minutes en remuant régulièrement. Retirer du feu, dresser sur le riz et ajouter la sauce au dernier moment.\nServir avec un peu de coriandre ciselée et des cacahuètes concassées ! Bon appétit ! :)", "prepTime": "15min", "cookTime": "10min", "yield": "2 personnes", "categories": [], "text": "Recette de poulet satay healthy et rapide à faire. Poulet sauce cacahuètes facile et délicieux. Repas simple pour le nouvel an chinois", "link": "https://www.healthyfoodcreation.fr/poulet-satay/", "nutrition": "", "favorite": false}, {"title": "Pasta alla Norma", "ingredients": "100 g Pâtes (Rigatoni)\n100 g Tomate (chair)\n1/2 gou. Ail\n1/2 Aubergine\n30 g Ricotta\n1/10 bou. Basilic (frais)", "instructions": "Lavez puis, coupez l'aubergine en demi-rondelles. Épluchez puis hachez l'ail finement (retirez le germe).\nDans une poêle chaude, faites revenir les aubergines avec un filet d'huile d'olive pendant 15 minutes à feu moyen.\nDans une casserole d'eau chaude, faites cuire les pâtes selon les indications du paquet.\nA mi-cuisson des aubergines, ajoutez l'ail.\nUne fois les aubergines cuites, ajoutez la chair de tomates et faites revenir 2 minutes. Salez, poivrez.\nMélangez les pâtes, la sauce et les aubergines.\nServez, ajoutez de la ricotta (optionnel : du basilic). C'est prêt !", "prepTime": "6min", "cookTime": "17min", "yield": "1 serving", "categories": [], "text": "Parce ce qu’il n’y a pas que la carbo et la bolo dans la vie !", "link": "https://jow.fr/recipes/pasta-alla-norma-8bs11x3f20wygkm60nao", "nutrition": "**Calories** 543 kcal\n**Lipides** 11 g\n**Glucides** 88 g\n**Fibres** 8 g\n**Protéines** 18 g", "favorite": false}, {"title": "ONEPOT GYOZA", "ingredients": "1 cas de pâte de curry rouge\n1 cas de pâte miso\n1 cas de beurre de cacahuète\n3 cas de sauce soja\n400ml de lait de coco\n1/2 jus de citron vert\n2 gousses d’ail\n1 bout de gingembre\n2 cebette\n1 poignée d’épinard\n1 paquet de Gyoza (ici au poulet)\nOptionnel : un peu d’huile pimentée", "instructions": "Mélanger tous les ingrédients pour la sauce.\nDécouper la cebette et ajouter le blanc à la sauce et les épinards.\nAjouter un peu d’eau si besoin et mélange, puis mettre les gyoza.\nEnfourner 30min à 180°.", "prepTime": "", "cookTime": "", "yield": "", "categories": [], "text": "", "link": "https://www.instagram.com/reel/DUi3ReKiBcQ", "nutrition": "", "favorite": false}];
+
+// ==================== STATE ====================
+let myIngredients = [];
+let searchMode = 'any';
+let currentResults = [];
+
+// Quick suggestions
+const QUICK = ['poulet','bœuf','porc','poisson','lardons','oeufs','fromage','parmesan','mozzarella',
+  'tomates','courgettes','aubergines','carottes','poireaux','champignons','épinards','pommes de terre',
+  'riz','pâtes','lentilles','pois chiches','crème','beurre','ail','oignon','citron','curry','gingembre'];
+
+// ==================== INIT ====================
+(function init(){
+  const qt = document.getElementById('quick-tags');
+  QUICK.forEach(q=>{
+    const b=document.createElement('button');
+    b.className='quick-tag';
+    b.textContent=q;
+    b.onclick=()=>{ 
+      if(myIngredients.includes(q)){removeIngredient(q);b.classList.remove('active');}
+      else{addIngredientDirect(q);b.classList.add('active');}
+    };
+    qt.appendChild(b);
+  });
+})();
+
+// ==================== INGREDIENT MANAGEMENT ====================
+function addIngredient(){
+  const val = document.getElementById('ingredient-input').value.trim().toLowerCase();
+  if(!val) return;
+  addIngredientDirect(val);
+  document.getElementById('ingredient-input').value='';
+}
+
+function addIngredientDirect(val){
+  if(!val||myIngredients.includes(val)) return;
+  myIngredients.push(val);
+  renderTags();
+  // sync quick tags
+  document.querySelectorAll('.quick-tag').forEach(b=>{
+    b.classList.toggle('active', myIngredients.includes(b.textContent));
+  });
+}
+
+function removeIngredient(val){
+  myIngredients = myIngredients.filter(i=>i!==val);
+  renderTags();
+  document.querySelectorAll('.quick-tag').forEach(b=>{
+    b.classList.toggle('active', myIngredients.includes(b.textContent));
+  });
+}
+
+function renderTags(){
+  const wrap = document.getElementById('tags-wrap');
+  if(myIngredients.length===0){
+    wrap.innerHTML='<span style="font-size:.8rem;color:var(--muted);align-self:center;padding:.2rem 0">Aucun ingrédient ajouté</span>';
+    return;
+  }
+  wrap.innerHTML = myIngredients.map(i=>`
+    <div class="tag">
+      ${i}
+      <button class="tag-remove" onclick="removeIngredient('${i}')">×</button>
+    </div>
+  `).join('');
+}
+
+function setMode(m){
+  searchMode=m;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mode-'+m).classList.add('active');
+}
+
+// ==================== SEARCH ====================
+function normalizeText(s){
+  return s.toLowerCase()
+    .normalize('NFD').replace(/\p{Diacritic}/gu,'')
+    .replace(/[^a-z0-9\s]/g,' ');
+}
+
+function scoreRecipe(recipe){
+  const ingredText = normalizeText(recipe.ingredients);
+  const titleText = normalizeText(recipe.title);
+  
+  // Get all ingredient lines (non-section headers)
+  const lines = recipe.ingredients.split('\n')
+    .map(l=>l.trim())
+    .filter(l=>l && !l.startsWith('#'));
+  
+  const matched = [];
+  const missingIngredients = [];
+  
+  myIngredients.forEach(ing=>{
+    const norm = normalizeText(ing);
+    const found = lines.some(l=>normalizeText(l).includes(norm)) || titleText.includes(norm);
+    if(found) matched.push(ing);
+  });
+  
+  // Also find which recipe ingredients we DON'T have
+  lines.forEach(l=>{
+    const lnorm = normalizeText(l);
+    const hasAny = myIngredients.some(i=>lnorm.includes(normalizeText(i)));
+    if(!hasAny && l.length>3){
+      // Extract main ingredient word (first meaningful word)
+      const words = l.replace(/\d+[\d.,\/]*\s*(g|kg|ml|l|cl|c[àa]\.[sc]|cuillères?.*|grammes?|litre|pincée|sachet|boîte|botte|tige|tranche|feuille|bouquet)\s*/gi,'').trim();
+      if(words.length>2) missingIngredients.push(words.slice(0,40));
+    }
+  });
+
+  return {
+    recipe,
+    matched,
+    missing: missingIngredients.slice(0,5),
+    score: matched.length,
+    total: lines.length,
+    ratio: lines.length>0 ? matched.length/lines.length : 0
+  };
+}
+
+function search(){
+  if(myIngredients.length===0){
+    alert('Ajoutez au moins un ingrédient !');
+    return;
+  }
+
+  const scored = RECIPES.map(r=>scoreRecipe(r))
+    .filter(s=>{
+      if(searchMode==='any') return s.score>0;
+      if(searchMode==='half') return s.ratio>=0.5;
+      if(searchMode==='all') return s.ratio>=0.95;
+      return false;
+    })
+    .sort((a,b)=>b.ratio-a.ratio || b.score-a.score);
+
+  currentResults = scored;
+  renderResults(scored);
+}
+
+// ==================== RENDER ====================
+function renderResults(results){
+  const container = document.getElementById('results-container');
+  const header = document.getElementById('results-header');
+  document.getElementById('results-badge').textContent = results.length;
+  header.style.display = results.length>0||myIngredients.length>0 ? 'flex':'none';
+
+  if(results.length===0){
+    container.innerHTML=`
+      <div class="empty">
+        <div class="empty-icon">🥲</div>
+        <div class="empty-text">Aucune recette trouvée avec ces ingrédients.<br>Essayez le mode "Au moins un ingrédient" !</div>
+      </div>`;
+    return;
+  }
+
+  const grid = document.createElement('div');
+  grid.className='recipe-grid';
+
+  results.forEach(({recipe,matched,missing,score,ratio})=>{
+    const isPerfect = ratio>=0.9;
+    const isGood = ratio>=0.5;
+    const pct = Math.round(ratio*100);
+
+    const card = document.createElement('div');
+    card.className='recipe-card';
+    card.onclick=()=>openModal(recipe, matched, missing);
+
+    const prep = recipe.prepTime ? `⏱ ${recipe.prepTime}`:''
+    const cook = recipe.cookTime ? `🍳 ${recipe.cookTime}`:''
+    const yld = recipe.yield ? `👥 ${recipe.yield}`:''
+
+    card.innerHTML=`
+      ${recipe.favorite?'<div class="card-fav">⭐</div>':''}
+      <div class="card-score ${isPerfect?'perfect':isGood?'':'partial'}">${pct}% match</div>
+      <div class="card-body">
+        <div class="card-title">${recipe.title}</div>
+        <div class="card-meta">
+          ${prep?`<div class="card-meta-item">${prep}</div>`:''}
+          ${cook?`<div class="card-meta-item">${cook}</div>`:''}
+          ${yld?`<div class="card-meta-item">${yld}</div>`:''}
+        </div>
+        <div class="card-ingredients-preview">
+          ✓ <strong>${matched.join(', ')}</strong>
+        </div>
+        ${missing.length>0&&!isPerfect?`<div class="card-missing">○ Manquants : ${missing.slice(0,3).join(', ')}${missing.length>3?'…':''}</div>`:''}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  container.innerHTML='';
+  container.appendChild(grid);
+
+  // Scroll to results
+  container.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ==================== MODAL ====================
+function openModal(recipe, matched, missing){
+  document.getElementById('modal-title').textContent = recipe.title;
+
+  // Meta chips
+  const chips = [];
+  if(recipe.prepTime) chips.push(`⏱ Prép: ${recipe.prepTime}`);
+  if(recipe.cookTime) chips.push(`🍳 Cuisson: ${recipe.cookTime}`);
+  if(recipe.yield) chips.push(`👥 ${recipe.yield}`);
+  if(recipe.favorite) chips.push('⭐ Favori');
+  document.getElementById('modal-meta').innerHTML = chips.map(c=>`<span class="modal-meta-chip">${c}</span>`).join('');
+
+  // Body
+  let body = '';
+
+  // Description
+  if(recipe.text){
+    body += `<div class="modal-section"><p style="font-style:italic;color:var(--brown2);font-size:.9rem">${recipe.text}</p></div>`;
+  }
+
+  // Ingredients
+  const lines = recipe.ingredients.split('\n');
+  body += `<div class="modal-section">
+    <div class="modal-section-title">🛒 Ingrédients</div>
+    <ul class="ingredient-list">`;
+
+  lines.forEach(line=>{
+    const l = line.trim();
+    if(!l) return;
+    if(l.startsWith('#')){
+      body+=`<li class="section-header">${l.replace('#','').trim()}</li>`;
+    } else {
+      const norm = l.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'').replace(/[^a-z0-9\s]/g,' ');
+      const have = myIngredients.some(i=>norm.includes(i.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'').replace(/[^a-z0-9\s]/g,' ')));
+      body+=`<li class="${have?'have':'missing'}">${l}</li>`;
+    }
+  });
+  body+='</ul></div>';
+
+  // Instructions
+  if(recipe.instructions){
+    const steps = recipe.instructions.split('\n').filter(s=>s.trim());
+    if(steps.length>1){
+      body+=`<div class="modal-section">
+        <div class="modal-section-title">📋 Instructions</div>`;
+      steps.forEach((step,i)=>{
+        body+=`<div class="step"><div class="step-num">${i+1}</div><div>${step.trim()}</div></div>`;
+      });
+      body+='</div>';
+    } else if(recipe.instructions.length>10){
+      body+=`<div class="modal-section">
+        <div class="modal-section-title">📋 Instructions</div>
+        <div class="instructions">${recipe.instructions}</div>
+      </div>`;
+    }
+  }
+
+  // Nutrition
+  if(recipe.nutrition){
+    const nutLines = recipe.nutrition.split('\n').filter(l=>l.trim());
+    const nutData = {};
+    nutLines.forEach(l=>{
+      const parts = l.split('**').filter(Boolean);
+      if(parts.length>=2) nutData[parts[0].trim()]=parts[1].trim();
+    });
+    if(Object.keys(nutData).length>0){
+      const keys = ['Calories','Protéines','Glucides','Lipides','Fibres'];
+      body+=`<div class="modal-section">
+        <div class="modal-section-title">📊 Valeurs nutritionnelles</div>
+        <div class="nutrition-grid">`;
+      keys.forEach(k=>{
+        if(nutData[k]) body+=`<div class="nut-chip"><div class="nut-val">${nutData[k]}</div><div class="nut-label">${k}</div></div>`;
+      });
+      body+='</div></div>';
+    }
+  }
+
+  // Link
+  if(recipe.link){
+    body+=`<div style="margin-top:.5rem">
+      <a class="modal-link" href="${recipe.link}" target="_blank">🔗 Voir la recette complète</a>
+    </div>`;
+  }
+
+  document.getElementById('modal-body').innerHTML=body;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(e){
+  if(!e || e.target===document.getElementById('modal-overlay')||e.currentTarget.tagName!=='DIV'){
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.body.style.overflow='';
+  }
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){ closeModal(); closeUploadModal(); }});
+
+// ==================== UPLOAD ====================
+let pendingImport = null; // {added:[], updated:[], skipped:[]}
+
+function openUploadModal(){
+  resetUploadModal();
+  document.getElementById('upload-modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeUploadModal(){
+  document.getElementById('upload-modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+  pendingImport = null;
+}
+
+function resetUploadModal(){
+  pendingImport = null;
+  document.getElementById('dropzone-icon').textContent='📦';
+  document.getElementById('dropzone-label').textContent='Glissez votre fichier ici';
+  document.getElementById('upload-progress').style.display='none';
+  document.getElementById('upload-result').style.display='none';
+  document.getElementById('result-added').style.display='none';
+  document.getElementById('result-updated').style.display='none';
+  document.getElementById('result-skipped').style.display='none';
+  document.getElementById('upload-confirm-btn').disabled=true;
+  document.getElementById('progress-bar-fill').style.width='0%';
+  document.getElementById('file-input').value='';
+}
+
+function dragOver(e){
+  e.preventDefault();
+  document.getElementById('dropzone').classList.add('drag-over');
+}
+function dragLeave(e){
+  document.getElementById('dropzone').classList.remove('drag-over');
+}
+function dropFile(e){
+  e.preventDefault();
+  document.getElementById('dropzone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if(file) processFile(file);
+}
+function handleFileSelect(e){
+  const file = e.target.files[0];
+  if(file) processFile(file);
+}
+
+async function processFile(file){
+  if(!file.name.endsWith('.melarecipes')){
+    showToast('error','❌','Ce fichier n\'est pas un .melarecipes valide');
+    return;
+  }
+
+  // Show progress
+  document.getElementById('upload-progress').style.display='block';
+  document.getElementById('upload-result').style.display='none';
+  document.getElementById('upload-confirm-btn').disabled=true;
+  document.getElementById('dropzone-icon').textContent='⏳';
+  document.getElementById('dropzone-label').textContent=file.name;
+  setProgress(10,'Lecture du fichier…');
+
+  try {
+    const zip = await JSZip.loadAsync(file);
+    const files = Object.keys(zip.files).filter(n=>n.endsWith('.melarecipe'));
+    const total = files.length;
+
+    if(total===0){
+      showToast('error','❌','Aucune recette trouvée dans ce fichier');
+      resetUploadModal();
+      return;
+    }
+
+    setProgress(20,`${total} recette(s) détectée(s), analyse…`);
+
+    // Build existing index by title (normalized) for dedup
+    const existingByTitle = {};
+    RECIPES.forEach((r,i)=>{
+      existingByTitle[normKey(r.title)] = i;
+    });
+
+    const added=[], updated=[], skipped=[];
+    const newRecipes = [];
+
+    for(let i=0;i<files.length;i++){
+      const fname = files[i];
+      const content = await zip.files[fname].async('string');
+      setProgress(20 + Math.round((i/total)*70), `Analyse ${i+1}/${total}…`);
+
+      let recipe;
+      try{ recipe = JSON.parse(content); }
+      catch(err){ skipped.push(fname); continue; }
+
+      if(!recipe.title||!recipe.ingredients){ skipped.push(fname); continue; }
+
+      const clean = {
+        title: recipe.title||'',
+        ingredients: recipe.ingredients||'',
+        instructions: recipe.instructions||'',
+        prepTime: recipe.prepTime||'',
+        cookTime: recipe.cookTime||'',
+        yield: recipe.yield||'',
+        categories: recipe.categories||[],
+        text: recipe.text||'',
+        link: recipe.link||'',
+        nutrition: recipe.nutrition||'',
+        favorite: recipe.favorite||false,
+      };
+
+      const key = normKey(clean.title);
+      if(key in existingByTitle){
+        // Update existing
+        updated.push({idx: existingByTitle[key], recipe: clean});
+      } else {
+        // New recipe
+        added.push(clean);
+        newRecipes.push(clean);
+      }
+    }
+
+    setProgress(100,'Analyse terminée !');
+    pendingImport = {added, updated, skipped, total};
+
+    // Show results
+    document.getElementById('upload-result').style.display='block';
+
+    if(added.length>0){
+      document.getElementById('result-added').style.display='flex';
+      document.getElementById('result-added-text').textContent=
+        `${added.length} nouvelle(s) recette(s) à ajouter : ${added.slice(0,3).map(r=>r.title).join(', ')}${added.length>3?'…':''}`;
+    }
+    if(updated.length>0){
+      document.getElementById('result-updated').style.display='flex';
+      document.getElementById('result-updated-text').textContent=
+        `${updated.length} recette(s) à mettre à jour : ${updated.slice(0,3).map(u=>u.recipe.title).join(', ')}${updated.length>3?'…':''}`;
+    }
+    if(skipped.length>0){
+      document.getElementById('result-skipped').style.display='flex';
+      document.getElementById('result-skipped-text').textContent=
+        `${skipped.length} fichier(s) ignoré(s) (format invalide)`;
+    }
+
+    if(added.length+updated.length>0){
+      document.getElementById('upload-confirm-btn').disabled=false;
+      document.getElementById('upload-confirm-btn').textContent=
+        `Importer (${added.length} ajout${added.length>1?'s':''}, ${updated.length} MAJ)`;
+    } else {
+      document.getElementById('upload-confirm-btn').textContent='Rien à importer';
+    }
+
+    document.getElementById('dropzone-icon').textContent='✅';
+
+  } catch(err){
+    showToast('error','❌','Erreur lors de la lecture : '+err.message);
+    resetUploadModal();
+  }
+}
+
+function normKey(s){
+  return s.trim().toLowerCase()
+    .normalize('NFD').replace(/\p{Diacritic}/gu,'')
+    .replace(/[^a-z0-9]/g,' ').replace(/\s+/g,' ').trim();
+}
+
+function setProgress(pct, label){
+  document.getElementById('progress-bar-fill').style.width=pct+'%';
+  document.getElementById('progress-label').textContent=label;
+}
+
+function confirmImport(){
+  if(!pendingImport) return;
+  const {added, updated} = pendingImport;
+
+  // Apply updates
+  updated.forEach(({idx, recipe})=>{
+    Object.assign(RECIPES[idx], recipe);
+  });
+
+  // Apply additions
+  added.forEach(r=>RECIPES.push(r));
+
+  const total = RECIPES.length;
+  document.getElementById('header-count').textContent=total+' recettes';
+
+  closeUploadModal();
+
+  const msg = [];
+  if(added.length>0) msg.push(`${added.length} ajoutée${added.length>1?'s':''}`);
+  if(updated.length>0) msg.push(`${updated.length} mise${updated.length>1?'s':''} à jour`);
+  showToast('success','✅', 'Base mise à jour — '+msg.join(', ')+` (${total} recettes au total)`);
+}
+
+// ==================== TOAST ====================
+let toastTimer;
+function showToast(type, icon, text){
+  const toast = document.getElementById('upload-toast');
+  document.getElementById('toast-icon').textContent=icon;
+  document.getElementById('toast-text').textContent=text;
+  toast.className='upload-toast '+type;
+  // Force reflow
+  toast.offsetHeight;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, 5000);
+}
+function hideToast(){
+  document.getElementById('upload-toast').classList.remove('show');
+}
+</script>
+</body>
+</html>
